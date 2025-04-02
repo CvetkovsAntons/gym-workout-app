@@ -20,7 +20,7 @@ func main() {
 		log.Fatal(err)
 		return
 	}
-
+	log.Println("hello")
 	mux := http.NewServeMux()
 
 	mw := middleware.NewMiddleware(redisClient)
