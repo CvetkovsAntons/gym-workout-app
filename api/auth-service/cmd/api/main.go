@@ -13,7 +13,11 @@ import (
 )
 
 func main() {
-	database.InitMongoDBClient()
+	err := database.InitMongoDBClient()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
 	redisClient, err := cache.NewRedis()
 	if err != nil {

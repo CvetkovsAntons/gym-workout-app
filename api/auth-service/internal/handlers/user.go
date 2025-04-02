@@ -19,16 +19,16 @@ type UserHandler interface {
 }
 
 type userHandler struct {
-	redis       *cache.Redis
-	userService services.UserService
-	jwtService  services.JWTService
+	redis *cache.Redis
+	user  services.UserService
+	jwt   services.JWTService
 }
 
 func NewUserHandler(redis *cache.Redis) UserHandler {
 	return &userHandler{
-		redis:       redis,
-		userService: services.NewUserService(redis),
-		jwtService:  services.NewJwtService(redis),
+		redis: redis,
+		user:  services.NewUserService(redis),
+		jwt:   services.NewJwtService(redis),
 	}
 }
 
@@ -58,12 +58,12 @@ func (u *userHandler) delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := u.jwtService.DeleteTokens(ctx, userId); err != nil {
+	if err := u.jwt.DeleteTokens(ctx, userId); err != nil {
 		response.WriteInternalServerError(w, err)
 		return
 	}
 
-	if err := u.userService.Delete(ctx, userId); err != nil {
+	if err := u.user.DeleteUser(ctx, userId); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			response.WriteError(w, http.StatusUnauthorized, "User doesn't exist")
 			return
@@ -85,7 +85,7 @@ func (u *userHandler) getInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := u.userService.GetUserById(ctx, userId)
+	user, err := u.user.GetUserById(ctx, userId)
 	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		response.WriteInternalServerError(w, err)
 		return
@@ -94,7 +94,7 @@ func (u *userHandler) getInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userData := u.userService.GetUserData(user)
+	userData := u.user.GetUserData(user)
 
 	response.Write(w, http.StatusOK, userData)
 }
@@ -114,7 +114,7 @@ func (u *userHandler) putInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := u.userService.GetUserById(ctx, userId)
+	user, err := u.user.GetUserById(ctx, userId)
 	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		response.WriteInternalServerError(w, err)
 		return
@@ -123,7 +123,7 @@ func (u *userHandler) putInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = u.userService.UpdateUserData(ctx, user, request)
+	err = u.user.UpdateUserData(ctx, user, request)
 	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		response.WriteInternalServerError(w, err)
 		return
