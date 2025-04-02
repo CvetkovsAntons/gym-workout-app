@@ -1,0 +1,82 @@
+services:
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+      - redis-cache
+    volumes:
+      - ./auth-service:/app
+    environment:
+      - DATABASE_URI=${DATABASE_URI}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - PORT=${PORT}
+      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+      - ACCESS_TOKEN_EXP_TIME=${ACCESS_TOKEN_EXP_TIME}
+      - REFRESH_TOKEN_EXP_TIME=${REFRESH_TOKEN_EXP_TIME}
+      - REDIS_ADDRESS=${REDIS_ADDRESS}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+
+  backup-service:
+    build:
+      context: ./backup-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - redis-cache
+    volumes:
+      - backup-service-data:/app/data
+
+  workout-exercise-data-service:
+    build:
+      context: ./workout-exercise-data-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+      - redis-cache
+    volumes:
+      - workout-exercise-data-service-data:/app/data
+
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: default_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo:6
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodbdata:/data/db
+
+  redis-cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes:
+      - redis-cache:/data
+
+volumes:
+  backup-service-data:
+  workout-exercise-data-service-data:
+  pgdata:
+  mongodbdata:
+  redis-cache:

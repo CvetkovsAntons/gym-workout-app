@@ -1,0 +1,6 @@
+.env
+.idea/
+/api/**/.env
+/api/**/.idea/
+/android/.env
+/android/.idea/
