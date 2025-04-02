@@ -50,6 +50,10 @@ func NewJwtService(redis *cache.Redis) JWTService {
 }
 
 func (s *jwtService) GenerateTokens(ctx context.Context, userId string) (string, string, error) {
+	err := s.DeleteTokens(ctx, userId)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to delete old tokens: %w", err)
+	}
 	accessToken, err := s.generateToken(ctx, userId, enums.AccessToken)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to generate access token: %w", err)
@@ -57,10 +61,6 @@ func (s *jwtService) GenerateTokens(ctx context.Context, userId string) (string,
 	refreshToken, err := s.generateToken(ctx, userId, enums.RefreshToken)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to generate refresh token: %w", err)
-	}
-	err = s.DeleteTokens(ctx, userId)
-	if err != nil {
-		return "", "", fmt.Errorf("failed to delete old tokens: %w", err)
 	}
 	err = s.redis.Client.SAdd(ctx, s.redisUserTokensKey(userId), accessToken, refreshToken).Err()
 	if err != nil {

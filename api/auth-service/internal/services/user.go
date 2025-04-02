@@ -21,7 +21,7 @@ type UserService interface {
 	UpdateUser(ctx context.Context, user *models.User, updateFields bson.M) error
 	UpdateUserById(ctx context.Context, id string, updateFields bson.M) (*models.User, error)
 	UpdateUserData(ctx context.Context, user *models.User, userData models.UserData) error
-	Delete(ctx context.Context, id string) error
+	DeleteUser(ctx context.Context, id string) error
 	UserWithIdExists(ctx context.Context, id string) (bool, error)
 	UserWithEmailExists(ctx context.Context, email string) (bool, error)
 }
@@ -112,7 +112,7 @@ func (s userService) UpdateUserData(ctx context.Context, user *models.User, user
 	return nil
 }
 
-func (s userService) Delete(ctx context.Context, id string) error {
+func (s userService) DeleteUser(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }
 

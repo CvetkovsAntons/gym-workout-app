@@ -2,5 +2,6 @@
 .idea/
 /api/**/.env
 /api/**/.idea/
+/api/**/tmp/
 /android/.env
 /android/.idea/
