@@ -1,21 +1,29 @@
 package com.example.gymworkoutapp.fragments
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.activities.UserDataActivity
+import com.example.gymworkoutapp.data.mappers.isValid
+import com.example.gymworkoutapp.data.repository.UserRepository
+import com.example.gymworkoutapp.models.UserData
+import kotlinx.coroutines.launch
 
-class ProfileFragment : Fragment() {
-
+class ProfileFragment(
+    private var userRepository: UserRepository
+) : Fragment() {
 //    private lateinit var auth: FirebaseAuth
 //    private lateinit var database: FirebaseDatabase
-//    private lateinit var name : String
-//    private lateinit var height : String
-//    private lateinit var weight : String
-//    private lateinit var builder : AlertDialog.Builder
-//
+
+    private lateinit var builder : AlertDialog.Builder
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -23,12 +31,12 @@ class ProfileFragment : Fragment() {
     ): View {
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }
-//
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 //        database = FirebaseDatabase.getInstance()
 //        auth = FirebaseAuth.getInstance()
-//
+
 //        builder = AlertDialog.Builder(requireActivity())
 //
 //        profile_edit.setOnClickListener {
@@ -68,28 +76,36 @@ class ProfileFragment : Fragment() {
 //                    })
 //                .show()
 //        }
-//
-//        loadUserInfo()
-//    }
-//
-//    private fun loadUserInfo() {
-//        database.getReference("users")
-//            .child(auth.currentUser!!.uid)
-//            .get()
-//            .addOnSuccessListener {
-//                name = it.child("name").value.toString()
-//                height = it.child("height").value.toString()
-//                weight = it.child("weight").value.toString()
-//
-//                profile_name.text = name
-//                profile_height.text = height + " cm"
-//                profile_weight.text = weight + " kg"
-//
-//                Glide.with(this@ProfileFragment).load(auth.currentUser!!.photoUrl).circleCrop().skipMemoryCache(true)
-//                    .into(profile_image)
-//            }
-//    }
-//
+
+        lifecycleScope.launch {
+            var userData = userRepository.getUserData()
+
+            if (userData == null || !userData.isValid()) {
+                startActivity(Intent(requireContext(), UserDataActivity::class.java))
+                requireActivity().finish()
+                return@launch
+            }
+
+            setUserData(view, userData)
+        }
+
+
+    }
+
+    private fun setUserData(view: View, userData: UserData) {
+        var name = userData.name
+        var height = "${userData.height} cm"
+        var weight = "${userData.weight} kg"
+
+        view.findViewById<TextView>(R.id.profile_name)?.text = name
+        view.findViewById<TextView>(R.id.profile_height)?.text = height
+        view.findViewById<TextView>(R.id.profile_weight)?.text = weight
+    }
+
+    private fun getTextView(view: View, elementId: Int): TextView? {
+        return view.findViewById<TextView>(elementId)
+    }
+
 //    private fun signOutProfile() {
 //        auth.signOut()
 //        val intent = Intent(requireActivity(), SignUpActivity::class.java)

@@ -6,7 +6,11 @@
     <string name="profile">Profile</string>
     <string name="image">image</string>
     <string name="sign_up">SIGN UP</string>
+    <string name="login">LOG IN</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="sign_up_with_google">SIGN UP WITH GOOGLE</string>
+    <string name="exercises">Exercises</string>
+    <string name="workouts">Workouts</string>
+    <string name="sign_out">SIGN OUT</string>
 </resources>
