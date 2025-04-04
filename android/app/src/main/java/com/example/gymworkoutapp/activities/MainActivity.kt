@@ -3,9 +3,10 @@ package com.example.gymworkoutapp.activities
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.gymworkoutapp.App
 import com.example.gymworkoutapp.R
-import com.example.gymworkoutapp.fragments.ExploreFragment
-import com.example.gymworkoutapp.fragments.HomeFragment
+import com.example.gymworkoutapp.fragments.ExerciseFragment
+import com.example.gymworkoutapp.fragments.WorkoutFragment
 import com.example.gymworkoutapp.fragments.ProfileFragment
 import com.example.gymworkoutapp.fragments.ResultsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -15,13 +16,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val userRepository = (application as App).userRepository
+
         val page = intent.getStringExtra("fragment")
         if (savedInstanceState == null) {
             val startFragment = when (page) {
-                "explorePage" -> ExploreFragment()
-                "resultsPage" -> ResultsFragment()
-                "profilePage" -> ProfileFragment()
-                else -> HomeFragment()
+                "exercisePage" -> ExerciseFragment(userRepository)
+                "resultsPage" -> ResultsFragment(userRepository)
+                "profilePage" -> ProfileFragment(userRepository)
+                else -> WorkoutFragment(userRepository)
             }
             switchFragment(startFragment)
         }
@@ -30,10 +33,10 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.Explore -> switchFragment(ExploreFragment())
-                R.id.Results -> switchFragment(ResultsFragment())
-                R.id.Profile -> switchFragment(ProfileFragment())
-                else -> switchFragment(HomeFragment())
+                R.id.Exercise -> switchFragment(ExerciseFragment(userRepository))
+                R.id.Results -> switchFragment(ResultsFragment(userRepository))
+                R.id.Profile -> switchFragment(ProfileFragment(userRepository))
+                else -> switchFragment(WorkoutFragment(userRepository))
             }
             true
         }

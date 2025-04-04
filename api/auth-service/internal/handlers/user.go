@@ -34,6 +34,9 @@ func NewUserHandler(redis *cache.Redis) UserHandler {
 
 func (u *userHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
+	case r.Method == http.MethodGet && r.URL.Path == "/user/isAuthenticated":
+		u.isAuthenticated(w, r)
+		return
 	case r.Method == http.MethodDelete && r.URL.Path == "/user/delete":
 		u.delete(w, r)
 		return
@@ -47,6 +50,10 @@ func (u *userHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		response.WriteError(w, http.StatusNotFound, "Page not found")
 		return
 	}
+}
+
+func (u *userHandler) isAuthenticated(w http.ResponseWriter, r *http.Request) {
+	response.WriteMessage(w, http.StatusOK, "User is authenticated")
 }
 
 func (u *userHandler) delete(w http.ResponseWriter, r *http.Request) {

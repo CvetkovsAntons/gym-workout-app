@@ -10,11 +10,11 @@ import com.example.gymworkoutapp.data.database.entities.User
 @Dao
 interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(user: User)
+    suspend fun insert(user: User)
 
     @Query("SELECT * FROM user LIMIT 1")
-    fun get(): User?
+    suspend fun get(): User?
 
     @Update
-    fun update(user: User)
+    suspend fun update(user: User)
 }

@@ -6,7 +6,7 @@ import com.example.gymworkoutapp.data.mappers.toUserData
 import com.example.gymworkoutapp.models.UserData
 
 class UserRepository(private val userDao: UserDao) {
-    suspend fun getUser(): UserData? {
+    suspend fun getUserData(): UserData? {
         return userDao.get()?.toUserData()
     }
 

@@ -8,7 +8,6 @@ fun User.toUserData() = UserData(
     weight = weight,
     height = height,
     name = name,
-    surname = surname,
     dateOfBirth = DateOfBirth(birthDay, birthMonth, birthYear)
 )
 
@@ -17,8 +16,20 @@ fun UserData.toEntity() = User(
     weight = weight,
     height = height,
     name = name,
-    surname = surname,
-    birthDay = dateOfBirth.day,
-    birthMonth = dateOfBirth.month,
-    birthYear = dateOfBirth.year,
+    birthDay = dateOfBirth?.day,
+    birthMonth = dateOfBirth?.month,
+    birthYear = dateOfBirth?.year,
 )
+
+fun UserData.isValid(): Boolean {
+    if (weight != null && height != null) {
+        return name?.isNotBlank() == true &&
+                weight > 0 &&
+                height > 0 &&
+                dateOfBirth?.day in 1..31 &&
+                dateOfBirth?.month in 1..12 &&
+                dateOfBirth?.year in 1900..2100
+    }
+
+    return true
+}

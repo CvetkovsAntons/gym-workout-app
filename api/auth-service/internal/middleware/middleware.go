@@ -38,12 +38,6 @@ func (mw *middleware) Headers(next http.Handler) http.Handler {
 			return
 		}
 
-		next.ServeHTTP(w, r)
-	})
-}
-
-func (mw *middleware) Token(tokenType enums.TokenType, next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("Authorization")
 		if token == "" {
 			response.WriteError(w, http.StatusUnauthorized, "Missing Authorization header")
@@ -57,6 +51,15 @@ func (mw *middleware) Token(tokenType enums.TokenType, next http.Handler) http.H
 		}
 
 		token = tokenParts[1]
+
+		ctx := context.WithValue(r.Context(), "token", token)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func (mw *middleware) Token(tokenType enums.TokenType, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := r.Context().Value("token").(string)
 
 		claims, err := mw.jwt.GetTokenClaims(tokenType, token)
 		if err != nil {

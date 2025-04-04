@@ -7,8 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.data.repository.UserRepository
 
-class HomeFragment : Fragment() {
+class WorkoutFragment(userRepository: UserRepository) : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
 //    private lateinit var workoutArrayList : ArrayList<>
