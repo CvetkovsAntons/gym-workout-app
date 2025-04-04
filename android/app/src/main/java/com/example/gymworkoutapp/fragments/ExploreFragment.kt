@@ -6,9 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.gymworkoutapp.R
-import com.example.gymworkoutapp.data.repository.UserRepository
 
-class ExerciseFragment(userRepository: UserRepository) : Fragment() {
+class ExploreFragment : Fragment() {
 //
 //    private lateinit var auth: FirebaseAuth
 //    private lateinit var database : FirebaseDatabase

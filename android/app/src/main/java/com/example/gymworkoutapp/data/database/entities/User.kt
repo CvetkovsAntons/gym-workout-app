@@ -7,10 +7,11 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "user")
 data class User(
     @PrimaryKey val id: Int = 0,
-    @ColumnInfo(name = "weight") val weight: Float?,
-    @ColumnInfo(name = "height") val height: Float?,
-    @ColumnInfo(name = "name") val name: String?,
-    @ColumnInfo(name = "birth_day") val birthDay: Int?,
-    @ColumnInfo(name = "birth_month") val birthMonth: Int?,
-    @ColumnInfo(name = "birth_year") val birthYear: Int?,
+    @ColumnInfo(name = "weight") val weight: Float,
+    @ColumnInfo(name = "height") val height: Float,
+    @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "surname") val surname: String,
+    @ColumnInfo(name = "birth_day") val birthDay: Int,
+    @ColumnInfo(name = "birth_month") val birthMonth: Int,
+    @ColumnInfo(name = "birth_year") val birthYear: Int,
 )

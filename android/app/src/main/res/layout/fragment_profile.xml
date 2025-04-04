@@ -11,38 +11,40 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary_darker"
+        android:background="@color/black"
         android:orientation="vertical"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="75dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_gravity="center_vertical"
+                android:layout_height="75dp" />
             <TextView
                 android:id="@+id/profile_name"
                 style="@style/TextAppearance.MaterialComponents.Headline5"
-                android:layout_width="340dp"
+                android:layout_width="250dp"
                 android:layout_height="100dp"
                 android:layout_marginEnd="5dp"
                 android:gravity="center_vertical"
-                android:text=""
-                android:textColor="@color/secondary" />
-
+                android:text="name"
+                android:textColor="@color/white" />
             <ImageView
                 android:id="@+id/profile_edit"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center_vertical"
                 android:clickable="true"
-                android:contentDescription="Edit profile"
                 android:focusable="true"
                 android:src="@drawable/ic_edit"
-                app:tint="@color/secondary" />
+                app:tint="@color/white" />
         </LinearLayout>
     </LinearLayout>
 
@@ -50,7 +52,7 @@
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary_darker"
+        android:background="@color/black"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +71,7 @@
                 android:layout_width="90dp"
                 android:layout_height="wrap_content"
                 android:text="Height: "
-                android:textColor="@color/secondary" />
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/profile_height"
@@ -77,8 +79,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
-                android:text=""
-                android:textColor="@color/secondary" />
+                android:text="height"
+                android:textColor="@color/white" />
         </LinearLayout>
 
         <LinearLayout
@@ -94,7 +96,7 @@
                 android:layout_width="90dp"
                 android:layout_height="wrap_content"
                 android:text="Weight: "
-                android:textColor="@color/secondary" />
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/profile_weight"
@@ -102,24 +104,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
-                android:text=""
-                android:textColor="@color/secondary" />
+                android:text="weight"
+                android:textColor="@color/white" />
         </LinearLayout>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/log_in_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:text="@string/login"
-        android:backgroundTint="@color/primary_darker"
-        android:textColor="@color/secondary"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/delete_account_button" />
 
     <Button
         android:id="@+id/sign_out_button"
@@ -127,13 +115,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
-        android:text="@string/sign_out"
-        android:backgroundTint="@color/primary_darker"
-        android:textColor="@color/secondary"
-        android:visibility="gone"
+        android:text="SIGN OUT"
+        android:backgroundTint="@color/black"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/delete_account_button" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
     <Button
         android:id="@+id/delete_account_button"
@@ -142,10 +129,9 @@
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
         android:text="DELETE PROFILE"
-        android:backgroundTint="@color/danger"
-        android:textColor="@color/secondary"
-        android:visibility="gone"
+        android:backgroundTint="@color/black"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/sign_out_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>

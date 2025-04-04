@@ -38,7 +38,6 @@ func main() {
 	mux.Handle("/auth/logout", mw.Headers(mw.Token(enums.AccessToken, authHandler)))
 
 	// user group
-	mux.Handle("/user/isAuthenticated", mw.Headers(mw.Token(enums.AccessToken, userHandler)))
 	mux.Handle("/user/delete", mw.Headers(mw.Token(enums.AccessToken, userHandler)))
 	mux.Handle("/user/info", mw.Headers(mw.Token(enums.AccessToken, userHandler)))
 
