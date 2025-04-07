@@ -10,11 +10,11 @@ class UserRepository(private val userDao: UserDao) {
         return userDao.get()?.toUserData()
     }
 
-    suspend fun insertUser(userData: UserData) {
+    suspend fun insertUserData(userData: UserData) {
         userDao.insert(userData.toEntity())
     }
 
-    suspend fun updateUser(userData: UserData) {
+    suspend fun updateUserData(userData: UserData) {
         userDao.update(userData.toEntity())
     }
 

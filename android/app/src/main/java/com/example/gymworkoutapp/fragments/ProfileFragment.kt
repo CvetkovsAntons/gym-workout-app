@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -34,19 +35,27 @@ class ProfileFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        database = FirebaseDatabase.getInstance()
-//        auth = FirebaseAuth.getInstance()
 
-//        builder = AlertDialog.Builder(requireActivity())
-//
-//        profile_edit.setOnClickListener {
-//            val intent = Intent(activity, EditProfileActivity::class.java)
-//            intent.putExtra("name", name)
-//            intent.putExtra("height", height)
-//            intent.putExtra("weight", weight)
-//            startActivity(intent)
-//        }
-//
+        val rootView = view.findViewById<View>(R.id.profile_fragment)
+        rootView.visibility = View.GONE
+
+        lifecycleScope.launch {
+            val userData = userRepository.getUserData()
+
+            if (userData == null || !userData.isValid()) {
+                openProfileEdit()
+                return@launch
+            }
+
+            setUserData(view, userData)
+
+            rootView.visibility = View.VISIBLE
+        }
+
+        view.findViewById<ImageView>(R.id.profile_edit).setOnClickListener {
+            openProfileEdit()
+        }
+
 //        sign_out_button.setOnClickListener {
 //            builder.setTitle("Are You Sure?")
 //                .setMessage("Are you sure you want to sign out?")
@@ -76,34 +85,21 @@ class ProfileFragment(
 //                    })
 //                .show()
 //        }
-
-        lifecycleScope.launch {
-            var userData = userRepository.getUserData()
-
-            if (userData == null || !userData.isValid()) {
-                startActivity(Intent(requireContext(), UserDataActivity::class.java))
-                requireActivity().finish()
-                return@launch
-            }
-
-            setUserData(view, userData)
-        }
-
-
     }
 
     private fun setUserData(view: View, userData: UserData) {
-        var name = userData.name
-        var height = "${userData.height} cm"
-        var weight = "${userData.weight} kg"
+        val name = userData.name
+        val height = "${userData.height} cm"
+        val weight = "${userData.weight} kg"
 
         view.findViewById<TextView>(R.id.profile_name)?.text = name
         view.findViewById<TextView>(R.id.profile_height)?.text = height
         view.findViewById<TextView>(R.id.profile_weight)?.text = weight
     }
 
-    private fun getTextView(view: View, elementId: Int): TextView? {
-        return view.findViewById<TextView>(elementId)
+    private fun openProfileEdit() {
+        val intent = Intent(activity, UserDataActivity::class.java)
+        startActivity(intent)
     }
 
 //    private fun signOutProfile() {
