@@ -25,12 +25,16 @@ class UserDataActivity : AppCompatActivity() {
         val rootView = findViewById<View>(R.id.user_data)
         rootView.visibility = View.GONE
 
+        val cancelButton = rootView.findViewById<Button>(R.id.profile_edit_cancel)
+
         repository = (application as App).userRepository
 
         lifecycleScope.launch {
             val userData = repository.getUserData()
 
             if (userData != null) {
+                cancelButton.visibility = View.VISIBLE
+
                 setValue(R.id.profile_edit_name, userData.name.toString())
                 setValue(R.id.profile_edit_height, userData.height.toString())
                 setValue(R.id.profile_edit_weight, userData.weight.toString())
@@ -48,6 +52,11 @@ class UserDataActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.profile_edit_save).setOnClickListener {
             saveUserData()
+        }
+
+        cancelButton.setOnClickListener {
+            setResult(RESULT_CANCELED)
+            finish()
         }
     }
 
@@ -83,6 +92,7 @@ class UserDataActivity : AppCompatActivity() {
             }
 
             Toast.makeText(this@UserDataActivity, "Saved successfully!", Toast.LENGTH_SHORT).show()
+            setResult(RESULT_OK)
             finish()
         }
     }

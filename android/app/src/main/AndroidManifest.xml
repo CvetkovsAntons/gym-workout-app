@@ -26,6 +26,7 @@
         </activity>
 
         <activity android:name=".activities.UserDataActivity" />
+        <activity android:name=".activities.AuthActivity" />
 
     </application>
 

@@ -6,22 +6,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.activities.AuthActivity
 import com.example.gymworkoutapp.activities.UserDataActivity
-import com.example.gymworkoutapp.data.mappers.isValid
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.models.UserData
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 class ProfileFragment(
-    private var userRepository: UserRepository
+    private var userRepository: UserRepository,
+    private val userData: UserData?
 ) : Fragment() {
-//    private lateinit var auth: FirebaseAuth
-//    private lateinit var database: FirebaseDatabase
 
     private lateinit var builder : AlertDialog.Builder
 
@@ -36,70 +37,64 @@ class ProfileFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val rootView = view.findViewById<View>(R.id.profile_fragment)
-        rootView.visibility = View.GONE
+        var loginButton = view.findViewById<Button>(R.id.log_in_button)
+
+        setUserData(view, userData)
+
+        loginButton.visibility = View.VISIBLE
+
+        view.findViewById<ImageView>(R.id.profile_edit).setOnClickListener {
+            startActivity(Intent(activity, UserDataActivity::class.java))
+        }
+
+        loginButton.setOnClickListener {
+            startActivity(Intent(activity, AuthActivity::class.java))
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         lifecycleScope.launch {
             val userData = userRepository.getUserData()
-
-            if (userData == null || !userData.isValid()) {
-                openProfileEdit()
-                return@launch
+            if (userData != null) {
+                setUserData(requireView(), userData)
             }
-
-            setUserData(view, userData)
-
-            rootView.visibility = View.VISIBLE
         }
-
-        view.findViewById<ImageView>(R.id.profile_edit).setOnClickListener {
-            openProfileEdit()
-        }
-
-//        sign_out_button.setOnClickListener {
-//            builder.setTitle("Are You Sure?")
-//                .setMessage("Are you sure you want to sign out?")
-//                .setCancelable(true)
-//                .setPositiveButton("Yes",
-//                    DialogInterface.OnClickListener {
-//                            dialog, id -> signOutProfile()
-//                    })
-//                .setNegativeButton("No",
-//                    DialogInterface.OnClickListener {
-//                            dialog, id -> dialog.cancel()
-//                    })
-//                .show()
-//        }
-//
-//        delete_account_button.setOnClickListener {
-//            builder.setTitle("Are You Sure?")
-//                .setMessage("Are you sure you want to delete your profile?")
-//                .setCancelable(true)
-//                .setPositiveButton("Yes",
-//                    DialogInterface.OnClickListener {
-//                            dialog, id -> deleteAccount()
-//                    })
-//                .setNegativeButton("No",
-//                    DialogInterface.OnClickListener {
-//                            dialog, id -> dialog.cancel()
-//                    })
-//                .show()
-//        }
     }
 
-    private fun setUserData(view: View, userData: UserData) {
-        val name = userData.name
-        val height = "${userData.height} cm"
-        val weight = "${userData.weight} kg"
+    private fun setUserData(view: View, userData: UserData?) {
+        var name = "-"
+        var height = "-"
+        var weight = "-"
+        var dob = "-"
+
+        if (userData != null) {
+            if (userData.name != null) {
+                name = userData.name
+            }
+            if (userData.height != null) {
+                height = "${userData.height} cm"
+            }
+            if (userData.weight != null) {
+                weight = "${userData.weight} kg"
+            }
+            if (userData.dateOfBirth != null) {
+                val day = userData.dateOfBirth.day
+                val month = userData.dateOfBirth.month
+                val year = userData.dateOfBirth.year
+                dob = "${day}/${month}/${year}"
+            }
+        }
 
         view.findViewById<TextView>(R.id.profile_name)?.text = name
         view.findViewById<TextView>(R.id.profile_height)?.text = height
         view.findViewById<TextView>(R.id.profile_weight)?.text = weight
+        view.findViewById<TextView>(R.id.profile_dob)?.text = dob
     }
 
-    private fun openProfileEdit() {
-        val intent = Intent(activity, UserDataActivity::class.java)
-        startActivity(intent)
+    private fun login() {
+
     }
 
 //    private fun signOutProfile() {

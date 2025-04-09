@@ -1,13 +1,10 @@
 package com.example.gymworkoutapp.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.gymworkoutapp.App
 import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.google.android.material.textfield.TextInputLayout
@@ -27,9 +24,9 @@ class AuthFragment(userRepository: UserRepository) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        signupTitle = view.findViewById(R.id.signup_title)
-        signupButton = view.findViewById(R.id.signup_btn)
-        resetPasswordField = view.findViewById(R.id.til_reset_password)
+        signupTitle = view.findViewById(R.id.auth_title)
+        signupButton = view.findViewById(R.id.auth_button)
+//        resetPasswordField = view.findViewById(R.id.til_reset_password)
 
 //        var text: String
 //        var resetPasswordVisibility: Int

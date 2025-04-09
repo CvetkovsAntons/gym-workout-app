@@ -60,6 +60,31 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/primary"
+            android:padding="14dp"
+            android:layout_marginBottom="1dp">
+
+            <TextView
+                style="@style/TextAppearance.MaterialComponents.Headline5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date of birth: "
+                android:textColor="@color/secondary" />
+
+            <TextView
+                android:id="@+id/profile_dob"
+                style="@style/TextAppearance.MaterialComponents.Headline5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:text=""
+                android:textColor="@color/secondary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="1dp"
             android:padding="15dp"
             android:orientation="horizontal"
@@ -114,7 +139,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
-        android:text="@string/login"
+        android:text="@string/sign_in"
         android:backgroundTint="@color/primary_darker"
         android:textColor="@color/secondary"
         android:visibility="gone"
@@ -142,11 +167,25 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
-        android:text="DELETE PROFILE"
+        android:text="@string/delete_profile"
         android:backgroundTint="@color/danger"
         android:textColor="@color/secondary"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
+
+<!--    <Button-->
+<!--        android:id="@+id/delete_user_data_button"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="15dp"-->
+<!--        android:layout_marginEnd="15dp"-->
+<!--        android:text="@string/delete_user_data"-->
+<!--        android:backgroundTint="@color/danger"-->
+<!--        android:textColor="@color/secondary"-->
+<!--        android:visibility="gone"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>
