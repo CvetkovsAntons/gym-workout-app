@@ -1,12 +1,20 @@
 package com.example.gymworkoutapp.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.api.ApiClient
+import com.example.gymworkoutapp.api.services.AuthRequest
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
+import java.util.logging.Logger
 
 class AuthActivity : AppCompatActivity() {
 
@@ -24,6 +32,10 @@ class AuthActivity : AppCompatActivity() {
 
         authMethodSwitch.setOnClickListener {
             switchAuthMethod()
+        }
+
+        findViewById<Button>(R.id.auth_button).setOnClickListener {
+            auth()
         }
     }
 
@@ -53,6 +65,29 @@ class AuthActivity : AppCompatActivity() {
         button.text = titleText
         methodSwitch.text = methodSwitchText
         resetPassword.visibility = resetPasswordVisibility
+    }
+
+    private fun auth() {
+        val request = AuthRequest(
+            findViewById<EditText>(R.id.et_signup_email).text.toString().trim(),
+            findViewById<EditText>(R.id.et_signup_password).text.toString().trim(),
+            findViewById<EditText>(R.id.et_repeat_password).text.toString().trim().takeIf { it.isNotEmpty() }
+        )
+
+        lifecycleScope.launch {
+            try {
+                val response = when (currentAuthMethod) {
+                    AuthMethod.SIGN_IN -> ApiClient.authService.register(request)
+                    AuthMethod.LOG_IN -> ApiClient.authService.login(request)
+                }
+
+                finish()
+            } catch (e: Exception) {
+                Log.e(e.message, e.message, e)
+                Toast.makeText(this@AuthActivity, "Auth failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     }
 
 }

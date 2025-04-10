@@ -64,4 +64,8 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.tooling.preview)
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
 }
