@@ -24,10 +24,11 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             tools:ignore="UselessParent">
+
             <TextView
                 android:id="@+id/profile_name"
                 style="@style/TextAppearance.MaterialComponents.Headline5"
-                android:layout_width="340dp"
+                android:layout_width="327dp"
                 android:layout_height="100dp"
                 android:layout_marginEnd="5dp"
                 android:gravity="center_vertical"
@@ -36,8 +37,8 @@
 
             <ImageView
                 android:id="@+id/profile_edit"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="center_vertical"
                 android:clickable="true"
                 android:contentDescription="Edit profile"
@@ -132,6 +133,34 @@
                 android:textColor="@color/secondary" />
         </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/history_weight_title"
+        style="@style/TextAppearance.MaterialComponents.Headline5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:text="Weight history"
+        android:gravity="center_horizontal"
+        android:background="@color/primary_darker"
+        android:textColor="@color/secondary"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintBottom_toTopOf="@+id/history_recycler_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/history_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/history_weight_title"
+        app:layout_constraintBottom_toTopOf="@+id/log_in_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/primary_darker"
+        tools:listitem="@layout/item_history_weight"
+        android:paddingBottom="3dp"/>
 
     <Button
         android:id="@+id/log_in_button"

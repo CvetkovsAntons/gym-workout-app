@@ -11,20 +11,21 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.activities.AuthActivity
 import com.example.gymworkoutapp.activities.UserDataActivity
+import com.example.gymworkoutapp.adapters.HistoryWeightAdapter
+import com.example.gymworkoutapp.data.database.entities.HistoryWeight
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.models.UserData
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
 class ProfileFragment(
     private var userRepository: UserRepository,
     private val userData: UserData?
 ) : Fragment() {
-
-    private lateinit var builder : AlertDialog.Builder
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,6 +41,8 @@ class ProfileFragment(
         var loginButton = view.findViewById<Button>(R.id.log_in_button)
 
         setUserData(view, userData)
+
+        setHistoryWeight(view)
 
         loginButton.visibility = View.VISIBLE
 
@@ -60,6 +63,18 @@ class ProfileFragment(
             if (userData != null) {
                 setUserData(requireView(), userData)
             }
+        }
+
+        setHistoryWeight(requireView())
+    }
+
+    private fun setHistoryWeight(view: View) {
+        val historyWeightRecycler = view.findViewById<RecyclerView>(R.id.history_recycler_view)
+        historyWeightRecycler.layoutManager = LinearLayoutManager(requireContext())
+
+        lifecycleScope.launch {
+            val historyWeight = userRepository.getWeightHistory()
+            historyWeightRecycler.adapter = HistoryWeightAdapter(historyWeight)
         }
     }
 

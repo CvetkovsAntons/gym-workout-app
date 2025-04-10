@@ -68,9 +68,7 @@ class UserDataActivity : AppCompatActivity() {
         val month = getValue(R.id.profile_edit_month).toIntOrNull()
         val year = getValue(R.id.profile_edit_year).toIntOrNull()
 
-        if (name.isEmpty() || height == null || weight == null ||
-            day == null || month == null || year == null
-            ) {
+        if (name.isEmpty() || height == null || weight == null || day == null || month == null || year == null) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
         }
@@ -91,7 +89,10 @@ class UserDataActivity : AppCompatActivity() {
                 repository.updateUserData(newUserData)
             }
 
-            Toast.makeText(this@UserDataActivity, "Saved successfully!", Toast.LENGTH_SHORT).show()
+            if (newUserData.weight != null && oldUserData?.weight != newUserData.weight) {
+                repository.insertHistoryWeight(newUserData.weight)
+            }
+
             setResult(RESULT_OK)
             finish()
         }

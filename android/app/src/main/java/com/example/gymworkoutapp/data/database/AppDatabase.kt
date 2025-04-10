@@ -7,9 +7,10 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.gymworkoutapp.data.database.converters.Converters
 import com.example.gymworkoutapp.data.database.dao.UserDao
+import com.example.gymworkoutapp.data.database.entities.HistoryWeight
 import com.example.gymworkoutapp.data.database.entities.User
 
-@Database(entities = [User::class], version = 3)
+@Database(entities = [User::class, HistoryWeight::class], version = 4)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
