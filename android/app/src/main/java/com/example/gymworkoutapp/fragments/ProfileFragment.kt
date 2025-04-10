@@ -1,21 +1,32 @@
 package com.example.gymworkoutapp.fragments
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.activities.AuthActivity
+import com.example.gymworkoutapp.activities.UserDataActivity
+import com.example.gymworkoutapp.adapters.HistoryWeightAdapter
+import com.example.gymworkoutapp.data.database.entities.HistoryWeight
+import com.example.gymworkoutapp.data.repository.UserRepository
+import com.example.gymworkoutapp.models.UserData
+import kotlinx.coroutines.launch
 
-class ProfileFragment : Fragment() {
+class ProfileFragment(
+    private var userRepository: UserRepository,
+    private val userData: UserData?
+) : Fragment() {
 
-//    private lateinit var auth: FirebaseAuth
-//    private lateinit var database: FirebaseDatabase
-//    private lateinit var name : String
-//    private lateinit var height : String
-//    private lateinit var weight : String
-//    private lateinit var builder : AlertDialog.Builder
-//
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -23,73 +34,84 @@ class ProfileFragment : Fragment() {
     ): View {
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }
-//
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//
-//        database = FirebaseDatabase.getInstance()
-//        auth = FirebaseAuth.getInstance()
-//
-//        builder = AlertDialog.Builder(requireActivity())
-//
-//        profile_edit.setOnClickListener {
-//            val intent = Intent(activity, EditProfileActivity::class.java)
-//            intent.putExtra("name", name)
-//            intent.putExtra("height", height)
-//            intent.putExtra("weight", weight)
-//            startActivity(intent)
-//        }
-//
-//        sign_out_button.setOnClickListener {
-//            builder.setTitle("Are You Sure?")
-//                .setMessage("Are you sure you want to sign out?")
-//                .setCancelable(true)
-//                .setPositiveButton("Yes",
-//                    DialogInterface.OnClickListener {
-//                            dialog, id -> signOutProfile()
-//                    })
-//                .setNegativeButton("No",
-//                    DialogInterface.OnClickListener {
-//                            dialog, id -> dialog.cancel()
-//                    })
-//                .show()
-//        }
-//
-//        delete_account_button.setOnClickListener {
-//            builder.setTitle("Are You Sure?")
-//                .setMessage("Are you sure you want to delete your profile?")
-//                .setCancelable(true)
-//                .setPositiveButton("Yes",
-//                    DialogInterface.OnClickListener {
-//                            dialog, id -> deleteAccount()
-//                    })
-//                .setNegativeButton("No",
-//                    DialogInterface.OnClickListener {
-//                            dialog, id -> dialog.cancel()
-//                    })
-//                .show()
-//        }
-//
-//        loadUserInfo()
-//    }
-//
-//    private fun loadUserInfo() {
-//        database.getReference("users")
-//            .child(auth.currentUser!!.uid)
-//            .get()
-//            .addOnSuccessListener {
-//                name = it.child("name").value.toString()
-//                height = it.child("height").value.toString()
-//                weight = it.child("weight").value.toString()
-//
-//                profile_name.text = name
-//                profile_height.text = height + " cm"
-//                profile_weight.text = weight + " kg"
-//
-//                Glide.with(this@ProfileFragment).load(auth.currentUser!!.photoUrl).circleCrop().skipMemoryCache(true)
-//                    .into(profile_image)
-//            }
-//    }
-//
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        var loginButton = view.findViewById<Button>(R.id.log_in_button)
+
+        setUserData(view, userData)
+
+        setHistoryWeight(view)
+
+        loginButton.visibility = View.VISIBLE
+
+        view.findViewById<ImageView>(R.id.profile_edit).setOnClickListener {
+            startActivity(Intent(activity, UserDataActivity::class.java))
+        }
+
+        loginButton.setOnClickListener {
+            startActivity(Intent(activity, AuthActivity::class.java))
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        lifecycleScope.launch {
+            val userData = userRepository.getUserData()
+            if (userData != null) {
+                setUserData(requireView(), userData)
+            }
+        }
+
+        setHistoryWeight(requireView())
+    }
+
+    private fun setHistoryWeight(view: View) {
+        val historyWeightRecycler = view.findViewById<RecyclerView>(R.id.history_recycler_view)
+        historyWeightRecycler.layoutManager = LinearLayoutManager(requireContext())
+
+        lifecycleScope.launch {
+            val historyWeight = userRepository.getWeightHistory()
+            historyWeightRecycler.adapter = HistoryWeightAdapter(historyWeight)
+        }
+    }
+
+    private fun setUserData(view: View, userData: UserData?) {
+        var name = "-"
+        var height = "-"
+        var weight = "-"
+        var dob = "-"
+
+        if (userData != null) {
+            if (userData.name != null) {
+                name = userData.name
+            }
+            if (userData.height != null) {
+                height = "${userData.height} cm"
+            }
+            if (userData.weight != null) {
+                weight = "${userData.weight} kg"
+            }
+            if (userData.dateOfBirth != null) {
+                val day = userData.dateOfBirth.day
+                val month = userData.dateOfBirth.month
+                val year = userData.dateOfBirth.year
+                dob = "${day}/${month}/${year}"
+            }
+        }
+
+        view.findViewById<TextView>(R.id.profile_name)?.text = name
+        view.findViewById<TextView>(R.id.profile_height)?.text = height
+        view.findViewById<TextView>(R.id.profile_weight)?.text = weight
+        view.findViewById<TextView>(R.id.profile_dob)?.text = dob
+    }
+
+    private fun login() {
+
+    }
+
 //    private fun signOutProfile() {
 //        auth.signOut()
 //        val intent = Intent(requireActivity(), SignUpActivity::class.java)

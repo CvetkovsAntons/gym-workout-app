@@ -7,9 +7,10 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.gymworkoutapp.data.database.converters.Converters
 import com.example.gymworkoutapp.data.database.dao.UserDao
+import com.example.gymworkoutapp.data.database.entities.HistoryWeight
 import com.example.gymworkoutapp.data.database.entities.User
 
-@Database(entities = [User::class], version = 1)
+@Database(entities = [User::class, HistoryWeight::class], version = 4)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
@@ -23,7 +24,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "gym_workout_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
