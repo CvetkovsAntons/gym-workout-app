@@ -108,22 +108,4 @@ class ProfileFragment(
         view.findViewById<TextView>(R.id.profile_dob)?.text = dob
     }
 
-    private fun login() {
-
-    }
-
-//    private fun signOutProfile() {
-//        auth.signOut()
-//        val intent = Intent(requireActivity(), SignUpActivity::class.java)
-//        startActivity(intent)
-//        requireActivity().finish()
-//    }
-//
-//    private fun deleteAccount() {
-//        val intent = Intent(requireActivity(), SignUpActivity::class.java)
-//        intent.putExtra("delete", "delete")
-//        intent.putExtra("user", auth.currentUser!!.uid)
-//        startActivity(intent)
-//        requireActivity().finish()
-//    }
 }

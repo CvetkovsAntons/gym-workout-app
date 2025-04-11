@@ -12,9 +12,11 @@ import androidx.lifecycle.lifecycleScope
 import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.api.ApiClient
 import com.example.gymworkoutapp.api.services.AuthRequest
+import com.example.gymworkoutapp.api.services.ErrorResponse
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import java.util.logging.Logger
+import retrofit2.Response
 
 class AuthActivity : AppCompatActivity() {
 
@@ -68,26 +70,58 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun auth() {
+        val passwordConfirm = findViewById<EditText>(R.id.et_repeat_password)?.text?.toString()?.trim()
         val request = AuthRequest(
-            findViewById<EditText>(R.id.et_signup_email).text.toString().trim(),
-            findViewById<EditText>(R.id.et_signup_password).text.toString().trim(),
-            findViewById<EditText>(R.id.et_repeat_password).text.toString().trim().takeIf { it.isNotEmpty() }
+            email = findViewById<EditText>(R.id.et_signup_email).text.toString().trim(),
+            password = findViewById<EditText>(R.id.et_signup_password).text.toString().trim(),
+            passwordConfirm = if (currentAuthMethod == AuthMethod.SIGN_IN) passwordConfirm else null
         )
 
         lifecycleScope.launch {
             try {
-                val response = when (currentAuthMethod) {
-                    AuthMethod.SIGN_IN -> ApiClient.authService.register(request)
-                    AuthMethod.LOG_IN -> ApiClient.authService.login(request)
+                when (currentAuthMethod) {
+                    AuthMethod.SIGN_IN -> processSignIn(request)
+                    AuthMethod.LOG_IN -> processLogIn(request)
                 }
-
-                finish()
             } catch (e: Exception) {
-                Log.e(e.message, e.message, e)
-                Toast.makeText(this@AuthActivity, "Auth failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AuthActivity, "Unexpected error", Toast.LENGTH_SHORT).show()
+                Log.e("Auth", "Exception: ", e)
             }
         }
+    }
 
+    private suspend fun processSignIn(request: AuthRequest) {
+        val response = ApiClient.authService.register(request)
+
+        if (response.isSuccessful) {
+            processLogIn(request)
+        } else {
+            processErrorResponse(response)
+        }
+    }
+
+    private suspend fun processLogIn(request: AuthRequest) {
+        val response = ApiClient.authService.login(request)
+
+        if (response.isSuccessful) {
+            finish()
+        } else {
+            processErrorResponse(response)
+        }
+    }
+
+    private fun processErrorResponse(response: Response<out Any>) {
+        val errorBody = response.errorBody()?.string()
+
+        val errorMessage = try {
+            val gson = Gson()
+            val errorResponse = gson.fromJson(errorBody, ErrorResponse::class.java)
+            errorResponse?.error ?: "Unknown error"
+        } catch (e: Exception) {
+            "Unexpected error"
+        }
+
+        Toast.makeText(this@AuthActivity, "Error: $errorMessage", Toast.LENGTH_SHORT).show()
     }
 
 }
