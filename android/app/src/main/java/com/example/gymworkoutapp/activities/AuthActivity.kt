@@ -9,16 +9,23 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.gymworkoutapp.App
 import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.api.ApiClient
-import com.example.gymworkoutapp.api.services.AuthRequest
-import com.example.gymworkoutapp.api.services.ErrorResponse
+import com.example.gymworkoutapp.data.repository.UserRepository
+import com.example.gymworkoutapp.managers.TokenManager
+import com.example.gymworkoutapp.models.RequestAuth
+import com.example.gymworkoutapp.models.ResponseError
+import com.example.gymworkoutapp.models.UserData
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class AuthActivity : AppCompatActivity() {
+
+    private lateinit var userRepository: UserRepository
+    private lateinit var tokenManager: TokenManager
 
     enum class AuthMethod {
         SIGN_IN, LOG_IN
@@ -27,6 +34,9 @@ class AuthActivity : AppCompatActivity() {
     private var currentAuthMethod: AuthMethod = AuthMethod.SIGN_IN
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        userRepository = (application as App).userRepository
+        tokenManager = TokenManager(this)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
@@ -71,10 +81,10 @@ class AuthActivity : AppCompatActivity() {
 
     private fun auth() {
         val passwordConfirm = findViewById<EditText>(R.id.et_repeat_password)?.text?.toString()?.trim()
-        val request = AuthRequest(
-            email = findViewById<EditText>(R.id.et_signup_email).text.toString().trim(),
-            password = findViewById<EditText>(R.id.et_signup_password).text.toString().trim(),
-            passwordConfirm = if (currentAuthMethod == AuthMethod.SIGN_IN) passwordConfirm else null
+        val request = RequestAuth(
+            findViewById<EditText>(R.id.et_signup_email).text.toString().trim(),
+            findViewById<EditText>(R.id.et_signup_password).text.toString().trim(),
+            if (currentAuthMethod == AuthMethod.SIGN_IN) passwordConfirm else null
         )
 
         lifecycleScope.launch {
@@ -90,7 +100,7 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun processSignIn(request: AuthRequest) {
+    private suspend fun processSignIn(request: RequestAuth) {
         val response = ApiClient.authService.register(request)
 
         if (response.isSuccessful) {
@@ -100,13 +110,41 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun processLogIn(request: AuthRequest) {
+    private suspend fun processLogIn(request: RequestAuth) {
         val response = ApiClient.authService.login(request)
 
         if (response.isSuccessful) {
+            val body = response.body()
+            if (body == null || body.accessToken == null || body.refreshToken == null) {
+                throw Exception("Invalid authentication response")
+            }
+
+            tokenManager.saveTokens(body.accessToken, body.refreshToken)
+
+            setUserData()
             finish()
         } else {
             processErrorResponse(response)
+        }
+    }
+
+    private suspend fun setUserData() {
+        val localUserData = userRepository.getUserData() ?: UserData(
+            name = null,
+            height = null,
+            weight = null,
+            dateOfBirth = null
+        )
+
+        val token = "Bearer ${tokenManager.getAccessToken()}"
+        val onlineUserData = ApiClient.userService.getInfo(token)
+
+        if (onlineUserData.body() == null) {
+            ApiClient.userService.putInfo(token, localUserData)
+        }
+
+        if (localUserData != null) {
+
         }
     }
 
@@ -115,7 +153,7 @@ class AuthActivity : AppCompatActivity() {
 
         val errorMessage = try {
             val gson = Gson()
-            val errorResponse = gson.fromJson(errorBody, ErrorResponse::class.java)
+            val errorResponse = gson.fromJson(errorBody, ResponseError::class.java)
             errorResponse?.error ?: "Unknown error"
         } catch (e: Exception) {
             "Unexpected error"
