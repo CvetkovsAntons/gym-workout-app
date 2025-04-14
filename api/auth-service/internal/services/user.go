@@ -56,10 +56,9 @@ func (s userService) GetUserData(user *models.User) models.UserData {
 	}
 
 	userData := models.UserData{
-		Name:    user.Data.Name,
-		Surname: user.Data.Surname,
-		Weight:  user.Data.Weight,
-		Height:  user.Data.Height,
+		Name:   user.Data.Name,
+		Weight: user.Data.Weight,
+		Height: user.Data.Height,
 	}
 
 	if user.Data.DateOfBirth != nil {
@@ -81,10 +80,9 @@ func (s userService) UpdateUserData(ctx context.Context, user *models.User, user
 	updateFields := bson.M{}
 
 	fields := map[string]interface{}{
-		"data.name":    userData.Name,
-		"data.surname": userData.Surname,
-		"data.weight":  userData.Weight,
-		"data.height":  userData.Height,
+		"data.name":   userData.Name,
+		"data.weight": userData.Weight,
+		"data.height": userData.Height,
 	}
 	if userData.DateOfBirth != nil {
 		fields["data.date_of_birth.day"] = userData.DateOfBirth.Day
