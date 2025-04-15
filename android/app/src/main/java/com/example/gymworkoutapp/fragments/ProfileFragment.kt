@@ -1,6 +1,5 @@
 package com.example.gymworkoutapp.fragments
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,8 +16,9 @@ import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.activities.AuthActivity
 import com.example.gymworkoutapp.activities.UserDataActivity
 import com.example.gymworkoutapp.adapters.HistoryWeightAdapter
-import com.example.gymworkoutapp.data.database.entities.HistoryWeight
+import com.example.gymworkoutapp.api.ApiClient
 import com.example.gymworkoutapp.data.repository.UserRepository
+import com.example.gymworkoutapp.managers.TokenManager
 import com.example.gymworkoutapp.models.UserData
 import kotlinx.coroutines.launch
 
@@ -26,6 +26,8 @@ class ProfileFragment(
     private var userRepository: UserRepository,
     private val userData: UserData?
 ) : Fragment() {
+
+    private lateinit var tokenManager: TokenManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,23 +38,57 @@ class ProfileFragment(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        tokenManager = TokenManager(requireContext())
+
         super.onViewCreated(view, savedInstanceState)
 
         var loginButton = view.findViewById<Button>(R.id.log_in_button)
+        var deleteAccountButton = view.findViewById<Button>(R.id.delete_account_button)
 
         setUserData(view, userData)
 
         setHistoryWeight(view)
 
-        loginButton.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            if (isAuthenticated()) {
+                loginButton.visibility = View.GONE
+                deleteAccountButton.visibility = View.VISIBLE
+            } else {
+                loginButton.visibility = View.VISIBLE
+                deleteAccountButton.visibility = View.GONE
+            }
 
-        view.findViewById<ImageView>(R.id.profile_edit).setOnClickListener {
-            startActivity(Intent(activity, UserDataActivity::class.java))
+
+            view.findViewById<ImageView>(R.id.profile_edit).setOnClickListener {
+                startActivity(Intent(activity, UserDataActivity::class.java))
+            }
+
+            loginButton.setOnClickListener {
+                startActivity(Intent(activity, AuthActivity::class.java))
+            }
+
+            deleteAccountButton.setOnClickListener {
+
+            }
+        }
+    }
+
+    private suspend fun isAuthenticated(): Boolean {
+        var token = tokenManager.getAccessToken()
+        if (token != null) {
+            val response = ApiClient.userService.isAuthenticated("Bearer $token")
+            if (response.isSuccessful) {
+                return true
+            }
         }
 
-        loginButton.setOnClickListener {
-            startActivity(Intent(activity, AuthActivity::class.java))
+        token = tokenManager.getRefreshToken()
+        if (token == null) {
+            return false
         }
+
+        ApiClient.authService.refresh("Bearer $token")
+        return isAuthenticated()
     }
 
     override fun onResume() {

@@ -20,9 +20,6 @@ interface AuthService {
 
     @Headers("Content-Type: application/json")
     @POST("/auth/refresh")
-    suspend fun refresh(
-        @Header("Authorization") refreshToken: String,
-        @Body request: RequestAuth
-    ): Response<ResponseAuth>
+    suspend fun refresh(@Header("Authorization") refreshToken: String): Response<ResponseAuth>
 
 }

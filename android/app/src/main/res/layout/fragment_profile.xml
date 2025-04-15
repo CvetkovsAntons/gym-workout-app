@@ -177,20 +177,6 @@
         app:layout_constraintBottom_toTopOf="@id/delete_account_button" />
 
     <Button
-        android:id="@+id/sign_out_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:text="@string/sign_out"
-        android:backgroundTint="@color/primary_darker"
-        android:textColor="@color/secondary"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/delete_account_button" />
-
-    <Button
         android:id="@+id/delete_account_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

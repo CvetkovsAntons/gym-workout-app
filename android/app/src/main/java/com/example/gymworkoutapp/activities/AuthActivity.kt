@@ -14,6 +14,7 @@ import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.api.ApiClient
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.managers.TokenManager
+import com.example.gymworkoutapp.models.DateOfBirth
 import com.example.gymworkoutapp.models.RequestAuth
 import com.example.gymworkoutapp.models.ResponseError
 import com.example.gymworkoutapp.models.UserData
@@ -129,23 +130,42 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private suspend fun setUserData() {
-        val localUserData = userRepository.getUserData() ?: UserData(
-            name = null,
-            height = null,
-            weight = null,
-            dateOfBirth = null
-        )
+        var local = userRepository.getUserData()
+        val localExists = local != null
+        if (!localExists) {
+            local = UserData(name = null, height = null, weight = null, dateOfBirth = null)
+        }
 
         val token = "Bearer ${tokenManager.getAccessToken()}"
-        val onlineUserData = ApiClient.userService.getInfo(token)
+        val online = ApiClient.userService.getInfo(token).body()
 
-        if (onlineUserData.body() == null) {
-            ApiClient.userService.putInfo(token, localUserData)
+        val localDob = local?.dateOfBirth
+        val onlineDob = online?.dateOfBirth
+
+        var dateOfBirth = DateOfBirth(
+            day = mergeUserDataField(localDob?.day, onlineDob?.day).toString().toIntOrNull(),
+            month = mergeUserDataField(localDob?.month, onlineDob?.month).toString().toIntOrNull(),
+            year = mergeUserDataField(localDob?.year, onlineDob?.year).toString().toIntOrNull()
+        )
+
+        val mergedUserData = UserData(
+            name = mergeUserDataField(local?.name, online?.name)?.toString(),
+            height = mergeUserDataField(local?.height, online?.height).toString().toFloatOrNull(),
+            weight = mergeUserDataField(local?.weight, online?.weight).toString().toFloatOrNull(),
+            dateOfBirth = dateOfBirth
+        )
+
+        if (localExists) {
+            userRepository.updateUserData(mergedUserData)
+        } else {
+            userRepository.insertUserData(mergedUserData)
         }
 
-        if (localUserData != null) {
+        ApiClient.userService.putInfo(token, mergedUserData)
+    }
 
-        }
+    private fun mergeUserDataField(local: Any?, online: Any ?): Any? {
+        return if (local == null && online != null) online else local
     }
 
     private fun processErrorResponse(response: Response<out Any>) {
