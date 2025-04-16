@@ -41,7 +41,7 @@
         android:layout_marginStart="172dp"
         android:layout_marginTop="35dp"
         android:layout_marginEnd="172dp"
-        android:text="@string/sign_in"
+        android:text="@string/sign_up"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_image" />
@@ -143,7 +143,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/sign_in"
+        android:text="@string/sign_up"
         android:backgroundTint="@color/primary_darker"
         android:textColor="@color/secondary"
         android:textSize="14sp"

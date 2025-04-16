@@ -5,8 +5,8 @@
     <string name="results">Results</string>
     <string name="profile">Profile</string>
     <string name="image">image</string>
-    <string name="sign_in">SIGN IN</string>
-    <string name="login">LOG IN</string>
+    <string name="sign_up">SIGN UP</string>
+    <string name="log_in">LOG IN</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="sign_up_with_google">SIGN UP WITH GOOGLE</string>
@@ -15,4 +15,5 @@
     <string name="sign_out">SIGN OUT</string>
     <string name="delete_profile">DELETE PROFILE</string>
     <string name="delete_user_data">DELETE USER DATA</string>
+    <string name="logout">LOGOUT</string>
 </resources>

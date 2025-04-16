@@ -20,6 +20,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/profile_edit_name_title"
             style="@style/TextAppearance.MaterialComponents.Headline5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,6 +42,7 @@
 
 
         <TextView
+            android:id="@+id/profile_edit_height_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="HEIGHT (cm)"
@@ -79,6 +81,7 @@
 
 
         <TextView
+            android:id="@+id/profile_edit_dob_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="DATE OF BIRTH"
@@ -88,6 +91,7 @@
             android:gravity="center"/>
 
         <LinearLayout
+            android:id="@+id/profile_edit_dob"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

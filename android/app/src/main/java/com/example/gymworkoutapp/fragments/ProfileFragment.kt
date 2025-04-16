@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,15 +18,15 @@ import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.activities.AuthActivity
 import com.example.gymworkoutapp.activities.UserDataActivity
 import com.example.gymworkoutapp.adapters.HistoryWeightAdapter
-import com.example.gymworkoutapp.data.database.entities.HistoryWeight
+import com.example.gymworkoutapp.auth.SessionManager
+import com.example.gymworkoutapp.network.client.ApiClient
 import com.example.gymworkoutapp.data.repository.UserRepository
-import com.example.gymworkoutapp.models.UserData
 import kotlinx.coroutines.launch
 
-class ProfileFragment(
-    private var userRepository: UserRepository,
-    private val userData: UserData?
-) : Fragment() {
+class ProfileFragment(private var userRepository: UserRepository) : Fragment() {
+
+    private lateinit var authButton: Button
+    private lateinit var deleteAccountButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,47 +39,110 @@ class ProfileFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var loginButton = view.findViewById<Button>(R.id.log_in_button)
+        authButton = view.findViewById<Button>(R.id.profile_auth_button)
+        deleteAccountButton = view.findViewById<Button>(R.id.delete_account_button)
 
-        setUserData(view, userData)
-
-        setHistoryWeight(view)
-
-        loginButton.visibility = View.VISIBLE
+        prepareFragment()
 
         view.findViewById<ImageView>(R.id.profile_edit).setOnClickListener {
             startActivity(Intent(activity, UserDataActivity::class.java))
         }
 
-        loginButton.setOnClickListener {
-            startActivity(Intent(activity, AuthActivity::class.java))
+        view.findViewById<ImageView>(R.id.profile_edit_weight).setOnClickListener {
+            val intent = Intent(activity, UserDataActivity::class.java)
+            intent.putExtra(UserDataActivity.EDIT_MODE, UserDataActivity.MODE_WEIGHT_ONLY)
+            startActivity(intent)
+        }
+
+        authButton.setOnClickListener {
+            handleAuthButton()
+        }
+
+        deleteAccountButton.setOnClickListener {
+            handleDeleteAccountButton()
         }
     }
 
     override fun onResume() {
         super.onResume()
+        prepareFragment()
+    }
 
+    private fun handleAuthButton() {
         lifecycleScope.launch {
-            val userData = userRepository.getUserData()
-            if (userData != null) {
-                setUserData(requireView(), userData)
+            if (SessionManager.isAuthenticated()) {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Sign Out")
+                    .setMessage("Are you sure you want to sign out?")
+                    .setPositiveButton("Yes") { _, _ -> signOut() }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            } else {
+                startActivity(Intent(activity, AuthActivity::class.java))
             }
         }
-
-        setHistoryWeight(requireView())
     }
 
-    private fun setHistoryWeight(view: View) {
-        val historyWeightRecycler = view.findViewById<RecyclerView>(R.id.history_recycler_view)
-        historyWeightRecycler.layoutManager = LinearLayoutManager(requireContext())
+    private fun handleDeleteAccountButton() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Account")
+            .setMessage("Are you sure you want to permanently delete your account?")
+            .setPositiveButton("Yes") { _, _ -> deleteAccount() }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
 
+    private fun signOut() {
         lifecycleScope.launch {
-            val historyWeight = userRepository.getWeightHistory()
-            historyWeightRecycler.adapter = HistoryWeightAdapter(historyWeight)
+            ApiClient.userService.logout()
+            SessionManager.clearTokens()
+            prepareFragment()
         }
     }
 
-    private fun setUserData(view: View, userData: UserData?) {
+    private fun deleteAccount() {
+        lifecycleScope.launch {
+            if (SessionManager.isAuthenticated()) {
+                ApiClient.userService.delete()
+                prepareFragment()
+            }
+        }
+    }
+
+    private fun prepareFragment() {
+        lifecycleScope.launch {
+            setUserData()
+            setHistoryWeight()
+            try {
+                var authButtonText = getString(R.string.log_in)
+                var deleteAccountButtonVisibility = View.GONE
+
+                if (SessionManager.isAuthenticated()) {
+                    authButtonText = getString(R.string.sign_out)
+                    deleteAccountButtonVisibility= View.VISIBLE
+                }
+
+                authButton.visibility = View.VISIBLE
+                authButton.text = authButtonText
+                deleteAccountButton.visibility = deleteAccountButtonVisibility
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private suspend fun setHistoryWeight() {
+        val view = requireView()
+        val historyWeightRecycler = view.findViewById<RecyclerView>(R.id.history_recycler_view)
+
+        historyWeightRecycler.layoutManager = LinearLayoutManager(requireContext())
+        historyWeightRecycler.adapter = HistoryWeightAdapter(userRepository.getWeightHistory())
+    }
+
+    private suspend fun setUserData() {
+        val view = requireView()
+        val userData = userRepository.getUserData()
+
         var name = "-"
         var height = "-"
         var weight = "-"
@@ -107,23 +171,4 @@ class ProfileFragment(
         view.findViewById<TextView>(R.id.profile_weight)?.text = weight
         view.findViewById<TextView>(R.id.profile_dob)?.text = dob
     }
-
-    private fun login() {
-
-    }
-
-//    private fun signOutProfile() {
-//        auth.signOut()
-//        val intent = Intent(requireActivity(), SignUpActivity::class.java)
-//        startActivity(intent)
-//        requireActivity().finish()
-//    }
-//
-//    private fun deleteAccount() {
-//        val intent = Intent(requireActivity(), SignUpActivity::class.java)
-//        intent.putExtra("delete", "delete")
-//        intent.putExtra("user", auth.currentUser!!.uid)
-//        startActivity(intent)
-//        requireActivity().finish()
-//    }
 }

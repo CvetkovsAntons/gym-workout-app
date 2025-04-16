@@ -14,7 +14,6 @@ type UserData struct {
 	Weight      *float64     `bson:"weight,omitempty" json:"weight,omitempty"`
 	Height      *float64     `bson:"height,omitempty" json:"height,omitempty"`
 	Name        *string      `bson:"name,omitempty" json:"name,omitempty"`
-	Surname     *string      `bson:"surname,omitempty" json:"surname,omitempty"`
 	DateOfBirth *DateOfBirth `bson:"date_of_birth,omitempty" json:"date_of_birth,omitempty"`
 }
 

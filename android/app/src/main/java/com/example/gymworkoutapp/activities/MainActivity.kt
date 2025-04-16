@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                 val startFragment = when (page) {
                     "exercisePage" -> ExerciseFragment(userRepository)
                     "resultsPage" -> ResultsFragment(userRepository)
-                    "profilePage" -> ProfileFragment(userRepository, userData)
+                    "profilePage" -> ProfileFragment(userRepository)
                     else -> WorkoutFragment(userRepository)
                 }
                 switchFragment(startFragment)
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                     R.id.Results -> switchFragment(ResultsFragment(userRepository))
                     R.id.Profile -> {
                         lifecycleScope.launch {
-                            switchFragment(ProfileFragment(userRepository, userRepository.getUserData()))
+                            switchFragment(ProfileFragment(userRepository))
                         }
                     }
                     else -> switchFragment(WorkoutFragment(userRepository))
