@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -13,15 +14,22 @@ import com.example.gymworkoutapp.network.client.ApiClient
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.models.DateOfBirth
 import com.example.gymworkoutapp.models.UserData
+import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.launch
 
 class UserDataActivity : AppCompatActivity() {
+
+    companion object {
+        const val EDIT_MODE = "edit_mode"
+        const val MODE_WEIGHT_ONLY = "weight_only"
+    }
 
     private lateinit var repository: UserRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_data)
+        prepareLayout()
 
         val rootView = findViewById<View>(R.id.user_data)
         rootView.visibility = View.GONE
@@ -58,6 +66,19 @@ class UserDataActivity : AppCompatActivity() {
         cancelButton.setOnClickListener {
             setResult(RESULT_CANCELED)
             finish()
+        }
+    }
+
+    private fun prepareLayout() {
+        if (intent.getStringExtra(EDIT_MODE) == MODE_WEIGHT_ONLY) {
+            findViewById<EditText>(R.id.profile_edit_name).visibility = View.GONE
+            findViewById<MaterialTextView>(R.id.profile_edit_name_title).visibility = View.GONE
+            findViewById<EditText>(R.id.profile_edit_height).visibility = View.GONE
+            findViewById<MaterialTextView>(R.id.profile_edit_height_title).visibility = View.GONE
+            findViewById<LinearLayout>(R.id.profile_edit_dob).visibility = View.GONE
+            findViewById<MaterialTextView>(R.id.profile_edit_dob_title).visibility = View.GONE
+
+            findViewById<EditText>(R.id.profile_edit_weight).requestFocus()
         }
     }
 

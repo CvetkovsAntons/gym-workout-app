@@ -2,8 +2,12 @@ package com.example.gymworkoutapp.auth
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.core.content.edit
+import com.example.gymworkoutapp.models.ResponseAuth
 import com.example.gymworkoutapp.network.auth.TokenManager
+import com.example.gymworkoutapp.network.auth.TokenManager.TokenType
 import com.example.gymworkoutapp.network.client.ApiClient
+import retrofit2.Response
 
 object SessionManager {
     @SuppressLint("StaticFieldLeak")
@@ -13,36 +17,39 @@ object SessionManager {
         tokenManager = TokenManager(context.applicationContext)
     }
 
-    fun tokenManager(): TokenManager {
-        return tokenManager
-    }
-
     suspend fun isAuthenticated(): Boolean {
-        var token = tokenManager.getAccessToken()
-        if (token != null) {
-            val response = ApiClient.userService.isAuthenticated()
-            if (response.isSuccessful) {
-                return true
-            }
+        if (ApiClient.userService.isAuthenticated().isSuccessful) {
+            return true
         }
 
-        token = tokenManager.getRefreshToken()
-        if (token == null) {
+        val token = tokenManager.getRefreshToken(true)
+        if (token.isNullOrEmpty()) {
             return false
         }
 
-        val response = ApiClient.authService.refresh("Bearer $token")
+        val response = ApiClient.authService.refresh(token)
         if (!response.isSuccessful) {
             return false
         }
 
-        val body = response.body()
-        if (body == null || body.accessToken == null || body.refreshToken == null) {
-            throw Exception("Invalid authentication response")
-        }
-
-        tokenManager.saveTokens(body.accessToken, body.refreshToken)
+        tokenManager.saveTokensFromResponse(response)
 
         return isAuthenticated()
+    }
+
+    fun saveTokensFromResponse(response: Response<ResponseAuth>) {
+        tokenManager.saveTokensFromResponse(response)
+    }
+
+    fun getAccessToken(formated: Boolean = false): String? {
+        return tokenManager.getAccessToken(formated)
+    }
+
+    fun getRefreshToken(formated: Boolean = false): String? {
+        return tokenManager.getRefreshToken(formated)
+    }
+
+    fun clearTokens() {
+        tokenManager.clearTokens()
     }
 }

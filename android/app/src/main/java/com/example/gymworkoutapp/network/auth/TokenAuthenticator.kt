@@ -10,9 +10,7 @@ import okhttp3.Route
 
 class TokenAuthenticator(private val authService: AuthService) : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request? {
-        val tokenManager = SessionManager.tokenManager()
-
-        val token = tokenManager.getRefreshToken()
+        val token = SessionManager.getRefreshToken()
         if (token == null) {
             return null
         }
@@ -22,15 +20,10 @@ class TokenAuthenticator(private val authService: AuthService) : Authenticator {
         }
 
         if (refreshResponse.isSuccessful) {
-            val newTokens = refreshResponse.body()
-            if (newTokens == null) {
-                return null
-            }
-
-            tokenManager.saveTokens(newTokens.accessToken, newTokens.refreshToken)
+            SessionManager.saveTokensFromResponse(refreshResponse)
 
             return response.request().newBuilder()
-                .header("Authorization", "Bearer ${newTokens.accessToken}")
+                .header("Authorization", SessionManager.getAccessToken(true).toString())
                 .build()
         }
 

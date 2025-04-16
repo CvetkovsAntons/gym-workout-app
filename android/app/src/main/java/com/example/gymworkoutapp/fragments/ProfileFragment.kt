@@ -1,5 +1,6 @@
 package com.example.gymworkoutapp.fragments
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -47,6 +48,12 @@ class ProfileFragment(private var userRepository: UserRepository) : Fragment() {
             startActivity(Intent(activity, UserDataActivity::class.java))
         }
 
+        view.findViewById<ImageView>(R.id.profile_edit_weight).setOnClickListener {
+            val intent = Intent(activity, UserDataActivity::class.java)
+            intent.putExtra(UserDataActivity.EDIT_MODE, UserDataActivity.MODE_WEIGHT_ONLY)
+            startActivity(intent)
+        }
+
         authButton.setOnClickListener {
             handleAuthButton()
         }
@@ -64,9 +71,12 @@ class ProfileFragment(private var userRepository: UserRepository) : Fragment() {
     private fun handleAuthButton() {
         lifecycleScope.launch {
             if (SessionManager.isAuthenticated()) {
-                ApiClient.userService.logout()
-                SessionManager.tokenManager().clearTokens()
-                prepareFragment()
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Sign Out")
+                    .setMessage("Are you sure you want to sign out?")
+                    .setPositiveButton("Yes") { _, _ -> signOut() }
+                    .setNegativeButton("Cancel", null)
+                    .show()
             } else {
                 startActivity(Intent(activity, AuthActivity::class.java))
             }
@@ -74,6 +84,23 @@ class ProfileFragment(private var userRepository: UserRepository) : Fragment() {
     }
 
     private fun handleDeleteAccountButton() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Account")
+            .setMessage("Are you sure you want to permanently delete your account?")
+            .setPositiveButton("Yes") { _, _ -> deleteAccount() }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun signOut() {
+        lifecycleScope.launch {
+            ApiClient.userService.logout()
+            SessionManager.clearTokens()
+            prepareFragment()
+        }
+    }
+
+    private fun deleteAccount() {
         lifecycleScope.launch {
             if (SessionManager.isAuthenticated()) {
                 ApiClient.userService.delete()
@@ -87,7 +114,7 @@ class ProfileFragment(private var userRepository: UserRepository) : Fragment() {
             setUserData()
             setHistoryWeight()
             try {
-                var authButtonText = getString(R.string.sign_in)
+                var authButtonText = getString(R.string.log_in)
                 var deleteAccountButtonVisibility = View.GONE
 
                 if (SessionManager.isAuthenticated()) {

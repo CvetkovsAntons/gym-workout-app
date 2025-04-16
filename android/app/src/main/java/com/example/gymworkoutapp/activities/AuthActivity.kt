@@ -16,13 +16,11 @@ import com.example.gymworkoutapp.network.client.ApiClient
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.models.DateOfBirth
 import com.example.gymworkoutapp.models.RequestAuth
-import com.example.gymworkoutapp.models.ResponseError
 import com.example.gymworkoutapp.models.UserData
-import com.example.gymworkoutapp.utils.ApiErrorHandler
+import com.example.gymworkoutapp.network.handlers.ApiErrorHandler
+import com.example.gymworkoutapp.utils.Helper
 import com.google.android.material.textfield.TextInputLayout
-import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import retrofit2.Response
 
 class AuthActivity : AppCompatActivity() {
 
@@ -32,7 +30,7 @@ class AuthActivity : AppCompatActivity() {
         SIGN_IN, LOG_IN
     }
 
-    private var currentAuthMethod: AuthMethod = AuthMethod.SIGN_IN
+    private var currentAuthMethod: AuthMethod = AuthMethod.LOG_IN
 
     override fun onCreate(savedInstanceState: Bundle?) {
         userRepository = (application as App).userRepository
@@ -40,9 +38,9 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
-        val authMethodSwitch = findViewById<TextView>(R.id.auth_method_switch)
+        prepareOutput()
 
-        authMethodSwitch.setOnClickListener {
+        findViewById<TextView>(R.id.auth_method_switch).setOnClickListener {
             switchAuthMethod()
         }
 
@@ -52,31 +50,31 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun switchAuthMethod() {
+        currentAuthMethod = if (currentAuthMethod == AuthMethod.SIGN_IN) {
+            AuthMethod.LOG_IN
+        } else {
+            AuthMethod.SIGN_IN
+        }
+        prepareOutput()
+    }
+
+    private fun prepareOutput() {
         val title = findViewById<TextView>(R.id.auth_title)
         val button = findViewById<Button>(R.id.auth_button)
         val methodSwitch = findViewById<TextView>(R.id.auth_method_switch)
         val resetPassword = findViewById<TextInputLayout>(R.id.til_signup_password_reset)
 
-        var titleText = title.text
-        var methodSwitchText = methodSwitch.text
-        var resetPasswordVisibility = resetPassword.visibility
-
         if (currentAuthMethod == AuthMethod.SIGN_IN) {
-            titleText = "LOG IN"
-            methodSwitchText = "Don't have an account? SIGN IN"
-            resetPasswordVisibility = View.GONE
-            currentAuthMethod = AuthMethod.LOG_IN
+            title.text = getString(R.string.sign_up)
+            button.text = getString(R.string.sign_up)
+            methodSwitch.text = "Already have an account? LOG IN"
+            resetPassword.visibility = View.VISIBLE
         } else {
-            titleText = "SIGN IN"
-            methodSwitchText = "Already have an account? LOG IN"
-            resetPasswordVisibility = View.VISIBLE
-            currentAuthMethod = AuthMethod.SIGN_IN
+            title.text = getString(R.string.log_in)
+            button.text = getString(R.string.log_in)
+            methodSwitch.text = "Don't have an account yet? SIGN UP"
+            resetPassword.visibility = View.GONE
         }
-
-        title.text = titleText
-        button.text = titleText
-        methodSwitch.text = methodSwitchText
-        resetPassword.visibility = resetPasswordVisibility
     }
 
     private fun auth() {
@@ -114,56 +112,12 @@ class AuthActivity : AppCompatActivity() {
         val response = ApiClient.authService.login(request)
 
         if (response.isSuccessful) {
-            val body = response.body()
-            if (body == null || body.accessToken == null || body.refreshToken == null) {
-                throw Exception("Invalid authentication response")
-            }
-
-            SessionManager.tokenManager().saveTokens(body.accessToken, body.refreshToken)
-
-            setUserData()
+            SessionManager.saveTokensFromResponse(response)
+            Helper.setMergedData()
             finish()
         } else {
             ApiErrorHandler.showError(this, response)
         }
-    }
-
-    private suspend fun setUserData() {
-        var local = userRepository.getUserData()
-        val localExists = local != null
-        if (!localExists) {
-            local = UserData(name = null, height = null, weight = null, dateOfBirth = null)
-        }
-
-        val online = ApiClient.userService.getInfo().body()
-
-        val localDob = local?.dateOfBirth
-        val onlineDob = online?.dateOfBirth
-
-        var dateOfBirth = DateOfBirth(
-            day = mergeUserDataField(localDob?.day, onlineDob?.day).toString().toIntOrNull(),
-            month = mergeUserDataField(localDob?.month, onlineDob?.month).toString().toIntOrNull(),
-            year = mergeUserDataField(localDob?.year, onlineDob?.year).toString().toIntOrNull()
-        )
-
-        val mergedUserData = UserData(
-            name = mergeUserDataField(local?.name, online?.name)?.toString(),
-            height = mergeUserDataField(local?.height, online?.height).toString().toFloatOrNull(),
-            weight = mergeUserDataField(local?.weight, online?.weight).toString().toFloatOrNull(),
-            dateOfBirth = dateOfBirth
-        )
-
-        if (localExists) {
-            userRepository.updateUserData(mergedUserData)
-        } else {
-            userRepository.insertUserData(mergedUserData)
-        }
-
-        ApiClient.userService.putInfo(mergedUserData)
-    }
-
-    private fun mergeUserDataField(local: Any?, online: Any ?): Any? {
-        return if (local == null && online != null) online else local
     }
 
 }

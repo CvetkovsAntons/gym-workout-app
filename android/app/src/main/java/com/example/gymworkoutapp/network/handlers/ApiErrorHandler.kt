@@ -1,4 +1,4 @@
-package com.example.gymworkoutapp.utils
+package com.example.gymworkoutapp.network.handlers
 
 import android.content.Context
 import android.view.View
@@ -24,10 +24,5 @@ object ApiErrorHandler {
     fun showError(context: Context, response: Response<*>) {
         val message = extractErrorMessage(response)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    }
-
-    fun showError(view: View, response: Response<*>) {
-        val message = extractErrorMessage(response)
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
     }
 }
