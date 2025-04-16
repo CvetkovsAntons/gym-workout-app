@@ -1,4 +1,4 @@
-package com.example.gymworkoutapp.api.services
+package com.example.gymworkoutapp.network.services
 
 import com.example.gymworkoutapp.models.RequestAuth
 import com.example.gymworkoutapp.models.ResponseDefault

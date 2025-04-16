@@ -11,13 +11,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.gymworkoutapp.App
 import com.example.gymworkoutapp.R
-import com.example.gymworkoutapp.api.ApiClient
+import com.example.gymworkoutapp.auth.SessionManager
+import com.example.gymworkoutapp.network.client.ApiClient
 import com.example.gymworkoutapp.data.repository.UserRepository
-import com.example.gymworkoutapp.managers.TokenManager
 import com.example.gymworkoutapp.models.DateOfBirth
 import com.example.gymworkoutapp.models.RequestAuth
 import com.example.gymworkoutapp.models.ResponseError
 import com.example.gymworkoutapp.models.UserData
+import com.example.gymworkoutapp.utils.ApiErrorHandler
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
@@ -26,7 +27,6 @@ import retrofit2.Response
 class AuthActivity : AppCompatActivity() {
 
     private lateinit var userRepository: UserRepository
-    private lateinit var tokenManager: TokenManager
 
     enum class AuthMethod {
         SIGN_IN, LOG_IN
@@ -36,7 +36,6 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         userRepository = (application as App).userRepository
-        tokenManager = TokenManager(this)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
@@ -107,7 +106,7 @@ class AuthActivity : AppCompatActivity() {
         if (response.isSuccessful) {
             processLogIn(request)
         } else {
-            processErrorResponse(response)
+            ApiErrorHandler.showError(this, response)
         }
     }
 
@@ -120,12 +119,12 @@ class AuthActivity : AppCompatActivity() {
                 throw Exception("Invalid authentication response")
             }
 
-            tokenManager.saveTokens(body.accessToken, body.refreshToken)
+            SessionManager.tokenManager().saveTokens(body.accessToken, body.refreshToken)
 
             setUserData()
             finish()
         } else {
-            processErrorResponse(response)
+            ApiErrorHandler.showError(this, response)
         }
     }
 
@@ -136,8 +135,7 @@ class AuthActivity : AppCompatActivity() {
             local = UserData(name = null, height = null, weight = null, dateOfBirth = null)
         }
 
-        val token = "Bearer ${tokenManager.getAccessToken()}"
-        val online = ApiClient.userService.getInfo(token).body()
+        val online = ApiClient.userService.getInfo().body()
 
         val localDob = local?.dateOfBirth
         val onlineDob = online?.dateOfBirth
@@ -161,25 +159,11 @@ class AuthActivity : AppCompatActivity() {
             userRepository.insertUserData(mergedUserData)
         }
 
-        ApiClient.userService.putInfo(token, mergedUserData)
+        ApiClient.userService.putInfo(mergedUserData)
     }
 
     private fun mergeUserDataField(local: Any?, online: Any ?): Any? {
         return if (local == null && online != null) online else local
-    }
-
-    private fun processErrorResponse(response: Response<out Any>) {
-        val errorBody = response.errorBody()?.string()
-
-        val errorMessage = try {
-            val gson = Gson()
-            val errorResponse = gson.fromJson(errorBody, ResponseError::class.java)
-            errorResponse?.error ?: "Unknown error"
-        } catch (e: Exception) {
-            "Unexpected error"
-        }
-
-        Toast.makeText(this@AuthActivity, "Error: $errorMessage", Toast.LENGTH_SHORT).show()
     }
 
 }

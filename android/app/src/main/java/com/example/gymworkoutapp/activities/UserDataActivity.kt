@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.gymworkoutapp.App
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.network.client.ApiClient
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.models.DateOfBirth
 import com.example.gymworkoutapp.models.UserData
@@ -92,6 +93,8 @@ class UserDataActivity : AppCompatActivity() {
             if (newUserData.weight != null && oldUserData?.weight != newUserData.weight) {
                 repository.insertHistoryWeight(newUserData.weight)
             }
+
+            ApiClient.userService.putInfo(newUserData)
 
             setResult(RESULT_OK)
             finish()

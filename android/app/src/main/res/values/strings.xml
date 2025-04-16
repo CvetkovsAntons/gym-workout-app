@@ -15,4 +15,5 @@
     <string name="sign_out">SIGN OUT</string>
     <string name="delete_profile">DELETE PROFILE</string>
     <string name="delete_user_data">DELETE USER DATA</string>
+    <string name="logout">LOGOUT</string>
 </resources>

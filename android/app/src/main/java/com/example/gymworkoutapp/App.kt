@@ -1,13 +1,16 @@
 package com.example.gymworkoutapp
 
-import android.app.Activity
 import android.app.Application
-import android.content.Intent
-import com.example.gymworkoutapp.activities.UserDataActivity
+import com.example.gymworkoutapp.auth.SessionManager
 import com.example.gymworkoutapp.data.database.AppDatabase
 import com.example.gymworkoutapp.data.repository.UserRepository
 
 class App : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        SessionManager.init(this)
+    }
+
     val database: AppDatabase by lazy {
         AppDatabase.getDatabase(this)
     }
