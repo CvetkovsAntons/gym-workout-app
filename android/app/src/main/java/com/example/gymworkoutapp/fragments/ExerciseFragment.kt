@@ -9,50 +9,19 @@ import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.data.repository.UserRepository
 
 class ExerciseFragment(userRepository: UserRepository) : Fragment() {
-//
-//    private lateinit var auth: FirebaseAuth
-//    private lateinit var database : FirebaseDatabase
-//    private var count : Long = 0
-//
-//    private lateinit var recyclerView: RecyclerView
-//    private lateinit var usersWorkoutsList : ArrayList<UsersWorkouts>
-//    private lateinit var workoutId : String
-//    private lateinit var idList : ArrayList<String>
-//    private lateinit var builder : AlertDialog.Builder
-//
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_explore, container, false)
+        return inflater.inflate(R.layout.fragment_exercises, container, false)
     }
-//
-//
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        database = FirebaseDatabase.getInstance()
-//        auth = FirebaseAuth.getInstance()
-//
-//        builder = AlertDialog.Builder(this.requireContext())
-//
-//        no_workouts_created.visibility = View.GONE
-//        users_workouts_delete.visibility = View.GONE
-//
-//        recyclerView = (view.findViewById(R.id.users_workouts_list)) as RecyclerView
-//        recyclerView.layoutManager = LinearLayoutManager(context)
-//        usersWorkoutsList = arrayListOf<UsersWorkouts>()
-//        idList = arrayListOf<String>()
-//
-//        create_workout_button.setOnClickListener {
-//            createWorkout()
-//        }
-//
-//        users_workouts_delete.setOnClickListener {
-//            alertDialog()
-//        }
-//
-//        getWorkout()
-//    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
 //
 //    private fun getWorkout() {
 //        database.getReference("usersWorkouts").child(auth.currentUser!!.uid).child("workouts")
