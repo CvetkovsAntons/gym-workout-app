@@ -42,7 +42,7 @@ class ProfileFragment(private var userRepository: UserRepository) : Fragment() {
         authButton = view.findViewById<Button>(R.id.profile_auth_button)
         deleteAccountButton = view.findViewById<Button>(R.id.delete_account_button)
 
-        prepareFragment()
+        prepareLayout()
 
         view.findViewById<ImageView>(R.id.profile_edit).setOnClickListener {
             startActivity(Intent(activity, UserDataActivity::class.java))
@@ -65,7 +65,7 @@ class ProfileFragment(private var userRepository: UserRepository) : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        prepareFragment()
+        prepareLayout()
     }
 
     private fun handleAuthButton() {
@@ -96,7 +96,7 @@ class ProfileFragment(private var userRepository: UserRepository) : Fragment() {
         lifecycleScope.launch {
             ApiClient.userService.logout()
             SessionManager.clearTokens()
-            prepareFragment()
+            prepareLayout()
         }
     }
 
@@ -104,12 +104,12 @@ class ProfileFragment(private var userRepository: UserRepository) : Fragment() {
         lifecycleScope.launch {
             if (SessionManager.isAuthenticated()) {
                 ApiClient.userService.delete()
-                prepareFragment()
+                prepareLayout()
             }
         }
     }
 
-    private fun prepareFragment() {
+    private fun prepareLayout() {
         lifecycleScope.launch {
             setUserData()
             setHistoryWeight()

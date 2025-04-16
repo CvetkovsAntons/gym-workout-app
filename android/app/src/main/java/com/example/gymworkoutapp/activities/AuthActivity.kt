@@ -14,11 +14,9 @@ import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.auth.SessionManager
 import com.example.gymworkoutapp.network.client.ApiClient
 import com.example.gymworkoutapp.data.repository.UserRepository
-import com.example.gymworkoutapp.models.DateOfBirth
+import com.example.gymworkoutapp.data.sync.UserDataSyncManager
 import com.example.gymworkoutapp.models.RequestAuth
-import com.example.gymworkoutapp.models.UserData
 import com.example.gymworkoutapp.network.handlers.ApiErrorHandler
-import com.example.gymworkoutapp.utils.Helper
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 
@@ -38,10 +36,15 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
-        prepareOutput()
+        prepareLayout()
 
         findViewById<TextView>(R.id.auth_method_switch).setOnClickListener {
-            switchAuthMethod()
+            currentAuthMethod = if (currentAuthMethod == AuthMethod.SIGN_IN) {
+                AuthMethod.LOG_IN
+            } else {
+                AuthMethod.SIGN_IN
+            }
+            prepareLayout()
         }
 
         findViewById<Button>(R.id.auth_button).setOnClickListener {
@@ -49,39 +52,33 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
-    private fun switchAuthMethod() {
-        currentAuthMethod = if (currentAuthMethod == AuthMethod.SIGN_IN) {
-            AuthMethod.LOG_IN
-        } else {
-            AuthMethod.SIGN_IN
-        }
-        prepareOutput()
-    }
+    private fun prepareLayout() {
+        val titleView = findViewById<TextView>(R.id.auth_title)
+        val authButton = findViewById<Button>(R.id.auth_button)
+        val switchText = findViewById<TextView>(R.id.auth_method_switch)
+        val passwordResetInput = findViewById<TextInputLayout>(R.id.til_signup_password_reset)
 
-    private fun prepareOutput() {
-        val title = findViewById<TextView>(R.id.auth_title)
-        val button = findViewById<Button>(R.id.auth_button)
-        val methodSwitch = findViewById<TextView>(R.id.auth_method_switch)
-        val resetPassword = findViewById<TextInputLayout>(R.id.til_signup_password_reset)
-
-        if (currentAuthMethod == AuthMethod.SIGN_IN) {
-            title.text = getString(R.string.sign_up)
-            button.text = getString(R.string.sign_up)
-            methodSwitch.text = "Already have an account? LOG IN"
-            resetPassword.visibility = View.VISIBLE
-        } else {
-            title.text = getString(R.string.log_in)
-            button.text = getString(R.string.log_in)
-            methodSwitch.text = "Don't have an account yet? SIGN UP"
-            resetPassword.visibility = View.GONE
+        when (currentAuthMethod) {
+            AuthMethod.SIGN_IN -> {
+                titleView.text = getString(R.string.sign_up)
+                authButton.text = getString(R.string.sign_up)
+                switchText.text = getString(R.string.auth_switch_signup)
+                passwordResetInput.visibility = View.VISIBLE
+            }
+            AuthMethod.LOG_IN -> {
+                titleView.text = getString(R.string.log_in)
+                authButton.text = getString(R.string.log_in)
+                switchText.text = getString(R.string.auth_switch_login)
+                passwordResetInput.visibility = View.GONE
+            }
         }
     }
 
     private fun auth() {
-        val passwordConfirm = findViewById<EditText>(R.id.et_repeat_password)?.text?.toString()?.trim()
+        val passwordConfirm = getRequestParam(R.id.et_repeat_password)
         val request = RequestAuth(
-            findViewById<EditText>(R.id.et_signup_email).text.toString().trim(),
-            findViewById<EditText>(R.id.et_signup_password).text.toString().trim(),
+            getRequestParam(R.id.et_signup_email),
+            getRequestParam(R.id.et_signup_password),
             if (currentAuthMethod == AuthMethod.SIGN_IN) passwordConfirm else null
         )
 
@@ -96,6 +93,10 @@ class AuthActivity : AppCompatActivity() {
                 Log.e("Auth", "Exception: ", e)
             }
         }
+    }
+
+    private fun getRequestParam(fieldId: Int): String {
+        return findViewById<EditText>(fieldId).text.toString().trim()
     }
 
     private suspend fun processSignIn(request: RequestAuth) {
@@ -113,7 +114,7 @@ class AuthActivity : AppCompatActivity() {
 
         if (response.isSuccessful) {
             SessionManager.saveTokensFromResponse(response)
-            Helper.setMergedData()
+            UserDataSyncManager(userRepository, ApiClient.userService).merge()
             finish()
         } else {
             ApiErrorHandler.showError(this, response)
