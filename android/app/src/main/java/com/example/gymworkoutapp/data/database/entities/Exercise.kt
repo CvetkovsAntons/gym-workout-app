@@ -1,0 +1,18 @@
+package com.example.gymworkoutapp.data.database.entities
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.example.gymworkoutapp.enums.Difficulty
+
+@Entity(tableName = "exercise")
+data class Exercise(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo(name = "name") var name: String,
+    @ColumnInfo(name = "description") var description: String,
+    @ColumnInfo(name = "video_url") var videoUrl: String,
+    @ColumnInfo(name = "image") var image: String,
+    @ColumnInfo(name = "difficulty") var difficulty: Difficulty,
+    @ColumnInfo(name = "is_user_created") var isUserCreated: Boolean,
+    @ColumnInfo(name = "is_user_favourite") var isUserFavourite: Boolean,
+)

@@ -3,15 +3,11 @@ package com.example.gymworkoutapp.network.auth
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.example.gymworkoutapp.enums.TokenType
 import com.example.gymworkoutapp.models.ResponseAuth
 import retrofit2.Response
 
 class TokenManager(private val context: Context) {
-
-    enum class TokenType {
-        ACCESS, REFRESH
-    }
-
     private fun authPreferences(): SharedPreferences {
         return context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
     }

@@ -1,14 +1,24 @@
 package com.example.gymworkoutapp.fragments
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.data.repository.UserRepository
+import com.example.gymworkoutapp.enums.Filter
+import com.google.android.material.button.MaterialButton
 
 class ExerciseFragment(userRepository: UserRepository) : Fragment() {
+
+    private lateinit var buttonFilterYou: MaterialButton
+    private lateinit var buttonFilterOthers: MaterialButton
+    private lateinit var buttonFilterDownloaded: MaterialButton
+
+    private var selectedFilters = mutableListOf<Filter>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -18,9 +28,59 @@ class ExerciseFragment(userRepository: UserRepository) : Fragment() {
         return inflater.inflate(R.layout.fragment_exercises, container, false)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        buttonFilterYou = view.findViewById(R.id.exercises_btn_created_by_you)
+        buttonFilterOthers = view.findViewById(R.id.exercises_btn_created_by_others)
+        buttonFilterDownloaded = view.findViewById(R.id.exercises_btn_downloaded)
+
+        prepareFilters()
+
+        buttonFilterYou.setOnClickListener {
+            changeFilter(Filter.CREATED_BY_YOU)
+        }
+        buttonFilterOthers.setOnClickListener {
+            changeFilter(Filter.CREATED_BY_OTHERS)
+        }
+        buttonFilterDownloaded.setOnClickListener {
+            changeFilter(Filter.DOWNLOADED)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        prepareFilters()
+    }
+
+    private fun changeFilter(filter: Filter) {
+        if (selectedFilters.contains(filter)) {
+            selectedFilters.remove(filter)
+        } else {
+            selectedFilters.add(filter)
+        }
+        setFilterColor(filter)
+    }
+
+    private fun setFilterColor(filter: Filter) {
+        val button = when (filter) {
+            Filter.CREATED_BY_YOU -> buttonFilterYou
+            Filter.CREATED_BY_OTHERS -> buttonFilterOthers
+            Filter.DOWNLOADED -> buttonFilterDownloaded
+        }
+
+        val selectedColor = ContextCompat.getColor(requireContext(), R.color.primary_darker)
+        val unselectedColor = ContextCompat.getColor(requireContext(), R.color.primary_lighter)
+
+        button.backgroundTintList = ColorStateList.valueOf(
+            if (filter in selectedFilters) selectedColor else unselectedColor
+        )
+    }
+
+    private fun prepareFilters() {
+        setFilterColor(Filter.CREATED_BY_YOU)
+        setFilterColor(Filter.CREATED_BY_OTHERS)
+        setFilterColor(Filter.DOWNLOADED)
     }
 //
 //    private fun getWorkout() {

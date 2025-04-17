@@ -36,8 +36,9 @@
             android:textColor="@color/secondary"
             android:layout_marginEnd="2dp"
             android:layout_marginStart="4dp"
+            android:textSize="8dp"
             app:cornerRadius="8dp"
-            app:backgroundTint="@color/primary_darker" />
+            app:backgroundTint="@color/primary_lighter" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/exercises_btn_created_by_others"
@@ -48,21 +49,35 @@
             android:textColor="@color/secondary"
             android:layout_marginEnd="4dp"
             android:layout_marginStart="2dp"
+            android:textSize="8dp"
             app:cornerRadius="8dp"
-            app:backgroundTint="@color/primary_darker" />
+            app:backgroundTint="@color/primary_lighter" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/exercises_btn_downloaded"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Downloaded"
+            android:textColor="@color/secondary"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="2dp"
+            android:textSize="8dp"
+            app:cornerRadius="8dp"
+            app:backgroundTint="@color/primary_lighter" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/no_workouts_created"
-        style="@style/TextAppearance.MaterialComponents.Headline5"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_horizontal|center_vertical"
-        android:textColor="@color/secondary"
-        android:text="You haven't created exercise yet"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<!--    <TextView-->
+<!--        android:id="@+id/no_workouts_created"-->
+<!--        style="@style/TextAppearance.MaterialComponents.Headline5"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:gravity="center_horizontal|center_vertical"-->
+<!--        android:textColor="@color/secondary"-->
+<!--        android:text="You haven't created exercise yet"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/exercises_list"
