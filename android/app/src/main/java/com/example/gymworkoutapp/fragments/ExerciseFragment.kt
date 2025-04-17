@@ -7,12 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.gymworkoutapp.App
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.enums.Filter
 import com.google.android.material.button.MaterialButton
 
-class ExerciseFragment(userRepository: UserRepository) : Fragment() {
+class ExerciseFragment(
+    private var repository: ExerciseRepository
+) : Fragment() {
 
     private lateinit var buttonFilterYou: MaterialButton
     private lateinit var buttonFilterOthers: MaterialButton

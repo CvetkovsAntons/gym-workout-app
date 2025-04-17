@@ -8,11 +8,11 @@ import com.example.gymworkoutapp.enums.Difficulty
 @Entity(tableName = "exercise")
 data class Exercise(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "name") var name: String,
-    @ColumnInfo(name = "description") var description: String,
-    @ColumnInfo(name = "video_url") var videoUrl: String,
-    @ColumnInfo(name = "image") var image: String,
-    @ColumnInfo(name = "difficulty") var difficulty: Difficulty,
-    @ColumnInfo(name = "is_user_created") var isUserCreated: Boolean,
-    @ColumnInfo(name = "is_user_favourite") var isUserFavourite: Boolean,
+    @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "description") val description: String,
+    @ColumnInfo(name = "video_url") val videoUrl: String,
+    @ColumnInfo(name = "image") val image: String,
+    @ColumnInfo(name = "difficulty") val difficulty: Difficulty,
+    @ColumnInfo(name = "is_user_created") val isUserCreated: Boolean,
+    @ColumnInfo(name = "is_user_favourite") val isUserFavourite: Boolean,
 )

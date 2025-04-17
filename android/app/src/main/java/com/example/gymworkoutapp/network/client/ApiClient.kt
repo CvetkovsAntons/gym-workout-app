@@ -1,6 +1,5 @@
 package com.example.gymworkoutapp.network.client
 
-import com.example.gymworkoutapp.auth.SessionManager
 import com.example.gymworkoutapp.network.auth.TokenAuthenticator
 import com.example.gymworkoutapp.network.interceptor.AuthInterceptor
 import com.example.gymworkoutapp.network.services.AuthService
@@ -11,13 +10,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-//    private const val BASE_URL = "http://10.0.2.2"
-    private const val BASE_URL = "http://192.168.0.185"
+    private const val BASE_URL = "http://10.0.2.2"
+//    private const val BASE_URL = "http://192.168.0.185"
     private const val AUTH_URL = "$BASE_URL:8080"
 
-    private fun getBase(): Retrofit.Builder {
+    private fun getBase(url: String): Retrofit.Builder {
         return Retrofit.Builder()
-            .baseUrl(AUTH_URL)
+            .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(CoroutineCallAdapterFactory.Companion())
     }
@@ -30,11 +29,11 @@ object ApiClient {
     }
 
     val authService: AuthService by lazy {
-        getBase().build().create(AuthService::class.java)
+        getBase(AUTH_URL).build().create(AuthService::class.java)
     }
 
     val userService: UserService by lazy {
-        getBase()
+        getBase(AUTH_URL)
             .client(provideOkHttpClient())
             .build()
             .create(UserService::class.java)
