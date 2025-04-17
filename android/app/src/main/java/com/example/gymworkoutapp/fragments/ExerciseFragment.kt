@@ -1,5 +1,6 @@
 package com.example.gymworkoutapp.fragments
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,10 +10,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.gymworkoutapp.App
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.activities.ExerciseConfigActivity
+import com.example.gymworkoutapp.activities.UserDataActivity
 import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.enums.Filter
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ExerciseFragment(
     private var repository: ExerciseRepository
@@ -49,6 +53,9 @@ class ExerciseFragment(
         }
         buttonFilterDownloaded.setOnClickListener {
             changeFilter(Filter.DOWNLOADED)
+        }
+        view.findViewById<FloatingActionButton>(R.id.exercises_create).setOnClickListener {
+            startActivity(Intent(activity, ExerciseConfigActivity::class.java))
         }
     }
 

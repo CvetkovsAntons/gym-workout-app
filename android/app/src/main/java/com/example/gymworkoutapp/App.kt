@@ -6,12 +6,24 @@ import com.example.gymworkoutapp.data.database.AppDatabase
 import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.utils.Helper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
         SessionManager.init(this)
         Helper.init(userRepository)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            if (exerciseRepository.getMuscleList().isEmpty()) {
+                exerciseRepository.insertDefaultMuscles()
+            }
+            if (exerciseRepository.getEquipmentList().isEmpty()) {
+                exerciseRepository.insertDefaultEquipment()
+            }
+        }
     }
 
     val database: AppDatabase by lazy {

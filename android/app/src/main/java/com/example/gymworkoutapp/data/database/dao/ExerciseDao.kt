@@ -6,15 +6,21 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.gymworkoutapp.data.database.entities.Equipment
 import com.example.gymworkoutapp.data.database.entities.Exercise
 import com.example.gymworkoutapp.data.database.entities.ExerciseEquipment
 import com.example.gymworkoutapp.data.database.entities.ExerciseExecutionStep
 import com.example.gymworkoutapp.data.database.entities.ExerciseExecutionTip
 import com.example.gymworkoutapp.data.database.entities.ExerciseMuscle
+import com.example.gymworkoutapp.data.database.entities.Muscle
 import com.example.gymworkoutapp.data.database.relations.ExerciseRelation
 
 @Dao
 interface ExerciseDao {
+    @Transaction
+    @Query("SELECT * FROM exercise WHERE id = :id")
+    suspend fun get(id: Int): ExerciseRelation?
+
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(exercise: Exercise): Long
@@ -36,8 +42,12 @@ interface ExerciseDao {
     suspend fun insert(executionStep: ExerciseExecutionStep)
 
     @Transaction
-    @Query("SELECT * FROM exercise LIMIT 1")
-    suspend fun get(): ExerciseRelation?
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(muscle: Muscle)
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(equipment: Equipment)
 
     @Transaction
     @Update(onConflict = OnConflictStrategy.REPLACE)
@@ -71,5 +81,11 @@ interface ExerciseDao {
 
     @Query("DELETE FROM exercise_execution_tip WHERE exercise_id = :exerciseId")
     suspend fun clearExecutionTips(exerciseId: Int)
+
+    @Query("SELECT * FROM muscle")
+    suspend fun getMuscleList(): List<Muscle>
+
+    @Query("SELECT * FROM equipment")
+    suspend fun getEquipmentList(): List<Equipment>
 
 }
