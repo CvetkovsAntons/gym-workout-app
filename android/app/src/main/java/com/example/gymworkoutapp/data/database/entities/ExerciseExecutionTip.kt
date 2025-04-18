@@ -18,6 +18,6 @@ import androidx.room.ForeignKey
 )
 data class ExerciseExecutionTip(
     @ColumnInfo(name = "exercise_id") val exerciseId: Int,
-    @ColumnInfo(name = "order_num") val orderNum: Int,
-    @ColumnInfo(name = "tip") val tip: String,
+    @ColumnInfo(name = "order_num") var orderNum: Int,
+    @ColumnInfo(name = "tip") var tip: String,
 )

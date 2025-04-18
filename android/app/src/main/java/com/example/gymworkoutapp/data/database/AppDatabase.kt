@@ -5,7 +5,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.gymworkoutapp.data.database.converters.Converters
 import com.example.gymworkoutapp.data.database.dao.ExerciseDao
 import com.example.gymworkoutapp.data.database.dao.UserDao
@@ -18,10 +17,6 @@ import com.example.gymworkoutapp.data.database.entities.ExerciseMuscle
 import com.example.gymworkoutapp.data.database.entities.HistoryWeight
 import com.example.gymworkoutapp.data.database.entities.Muscle
 import com.example.gymworkoutapp.data.database.entities.User
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Database(
     entities = [
@@ -29,7 +24,7 @@ import kotlinx.coroutines.withContext
         Exercise::class, ExerciseMuscle::class, ExerciseEquipment::class,
         ExerciseExecutionTip::class, ExerciseExecutionStep::class
     ],
-    version = 9
+    version = 11
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {

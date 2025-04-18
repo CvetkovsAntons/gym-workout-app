@@ -18,6 +18,6 @@ import androidx.room.ForeignKey
 )
 data class ExerciseExecutionStep(
     @ColumnInfo(name = "exercise_id") val exerciseId: Int,
-    @ColumnInfo(name = "order_num") val orderNum: Int,
-    @ColumnInfo(name = "description") val description: String,
+    @ColumnInfo(name = "order_num") var orderNum: Int,
+    @ColumnInfo(name = "description") var description: String,
 )

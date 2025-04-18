@@ -24,7 +24,6 @@
         app:layout_constraintTop_toTopOf="parent"
         android:maxLength="25"/>
 
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,40 +36,117 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="15dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@color/primary_lighter"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/rounded_container_lighter"
+                android:orientation="vertical">
                 <TextView
                     style="@style/TextAppearance.MaterialComponents.Headline6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_container_title_darker"
                     android:gravity="start"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
                     android:text="Description"
-                    android:background="@color/primary_darker"
                     android:textColor="@color/secondary" />
                 <EditText
                     android:id="@+id/exercise_config_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:inputType="textMultiLine"
+                    android:background="@android:color/transparent"
                     android:gravity="top|start"
+                    android:hint="Short description of the exercise. 120 chars max..."
+                    android:inputType="textMultiLine"
+                    android:maxLength="120"
                     android:padding="8dp"
                     android:textColor="@color/secondary"
-                    android:background="@android:color/transparent"
-                    android:maxLength="120"/>
+                    android:textColorHint="@color/secondary_darker" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/rounded_container_lighter"
+                android:orientation="vertical">
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_container_title_darker"
+                    android:gravity="start"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="Execution steps"
+                    android:textColor="@color/secondary" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/exercise_config_execution_steps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:listitem="@layout/item_text_list"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp" />
+                <Button
+                    android:id="@+id/exercise_config_execution_steps_add_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/secondary"
+                    android:text="Add"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/rounded_container_lighter"
+                android:orientation="vertical">
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_container_title_darker"
+                    android:gravity="start"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="Execution steps"
+                    android:textColor="@color/secondary" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/exercise_config_execution_tips"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:listitem="@layout/item_text_list"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp" />
+                <Button
+                    android:id="@+id/exercise_config_execution_tips_add_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/secondary"
+                    android:text="Add"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@color/primary_lighter"
+                android:background="@drawable/rounded_container_lighter"
                 android:layout_marginBottom="12dp">
                 <TextView
                     style="@style/TextAppearance.MaterialComponents.Headline6"
@@ -78,9 +154,9 @@
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:text="Muscles"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
-                    android:background="@color/primary_darker"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:background="@drawable/rounded_container_title_darker"
                     android:textColor="@color/secondary" />
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/exercise_config_muscles"
@@ -97,16 +173,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@color/primary_lighter"
+                android:background="@drawable/rounded_container_lighter"
                 android:layout_marginBottom="12dp">
                 <TextView
                     style="@style/TextAppearance.MaterialComponents.Headline6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
-                    android:background="@color/primary_darker"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:background="@drawable/rounded_container_title_darker"
                     android:text="Equipment"
                     android:textColor="@color/secondary" />
                 <androidx.recyclerview.widget.RecyclerView
@@ -119,19 +195,67 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     tools:listitem="@layout/item_checkbox" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/rounded_container_lighter"
+                android:layout_marginBottom="12dp">
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="Video URL"
+                    android:background="@drawable/rounded_container_title_darker"
+                    android:textColor="@color/secondary" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <EditText
+                        android:id="@+id/exercise_config_video_url"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:autofillHints=""
+                        android:gravity="top|start"
+                        android:inputType="textUri"
+                        android:padding="8dp"
+                        android:hint="https://www.youtube.com/"
+                        android:textColorHint="@color/secondary_darker"
+                        android:textColor="@color/secondary"
+                        android:background="@android:color/transparent" />
+                    <Button
+                        android:id="@+id/exercise_config_video_url_set_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/secondary"
+                        android:text="set"
+                        android:layout_marginEnd="5dp"/>
+                </LinearLayout>
+                <WebView
+                    android:id="@+id/exercise_config_video"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:visibility="gone"
+                    android:background="@drawable/rounded_container_lighter"
+                    tools:ignore="WebViewLayout" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
 
     <LinearLayout
         android:id="@+id/exercise_config_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="15dp"
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp"
-        android:paddingTop="5dp"
+        android:padding="15dp"
         android:background="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

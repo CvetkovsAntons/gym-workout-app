@@ -8,15 +8,19 @@ import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.utils.Helper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 class App : Application() {
+
+    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     override fun onCreate() {
         super.onCreate()
         SessionManager.init(this)
         Helper.init(userRepository)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        appScope.launch {
             if (exerciseRepository.getMuscleList().isEmpty()) {
                 exerciseRepository.insertDefaultMuscles()
             }
