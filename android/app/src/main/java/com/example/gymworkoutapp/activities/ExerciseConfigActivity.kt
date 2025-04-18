@@ -1,11 +1,21 @@
 package com.example.gymworkoutapp.activities
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Base64
 import android.view.View
 import android.webkit.WebView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,23 +29,37 @@ import com.example.gymworkoutapp.data.database.entities.ExerciseExecutionStep
 import com.example.gymworkoutapp.data.database.entities.ExerciseExecutionTip
 import com.example.gymworkoutapp.data.database.entities.Muscle
 import com.example.gymworkoutapp.data.repository.ExerciseRepository
+import com.example.gymworkoutapp.enums.Difficulty
+import com.example.gymworkoutapp.models.ExerciseData
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 
 class ExerciseConfigActivity : AppCompatActivity() {
 
     private lateinit var repository: ExerciseRepository
 
-//    val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent(),
-//        fun(it: Uri?) {
-//            val galleryUri = it
-//            try {
-//                findViewById<ImageView>(R.id.exercise_config_image).setImageURI(galleryUri)
-//                findViewById<Button>(R.id.exercise_config_image_btn).visibility = View.GONE
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
-//    )
+    val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent(),
+        fun(it: Uri?) {
+            val galleryUri = it
+            val image = findViewById<ImageView>(R.id.exercise_config_image)
+            val imageUriTextView = findViewById<TextView>(R.id.exercise_config_image_uri)
+
+            try {
+                if (galleryUri != null) {
+                    image.setImageURI(galleryUri)
+                    image.visibility = View.VISIBLE
+                    imageUriTextView.text = galleryUri.path
+                } else {
+                    image.visibility = View.GONE
+                    imageUriTextView.text = "Image is not selected..."
+                }
+
+                imageUri = uriToBase64(galleryUri)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    )
 
     private var executionStepAdapter: TextListAdapter<ExerciseExecutionStep>? = null
     private var executionTipAdapter: TextListAdapter<ExerciseExecutionTip>? = null
@@ -45,13 +69,26 @@ class ExerciseConfigActivity : AppCompatActivity() {
     private var executionSteps = mutableListOf<ExerciseExecutionStep>()
     private var executionTips = mutableListOf<ExerciseExecutionTip>()
 
+    private val difficulties = Difficulty.entries
+
+    private lateinit var difficultySpinner: Spinner
+    private var videoUrl: String? = null
+    private var imageUri: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = (application as App).exerciseRepository
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exercise_config)
 
-        prepareLayout()
+        lifecycleScope.launch {
+            setMuscleList()
+            setEquipmentList()
+            setExecutionSteps()
+            setExecutionTips()
+            setDifficultySpinner()
+            setVideo()
+        }
 
         findViewById<EditText>(R.id.exercise_config_name).requestFocus()
 
@@ -67,6 +104,12 @@ class ExerciseConfigActivity : AppCompatActivity() {
         findViewById<Button>(R.id.exercise_config_execution_tips_add_btn).setOnClickListener {
             addExecutionTip()
         }
+        findViewById<Button>(R.id.exercise_config_image_select_btn).setOnClickListener {
+            galleryLauncher.launch("image/*")
+        }
+        findViewById<Button>(R.id.exercise_config_btn_save).setOnClickListener {
+            saveExercise()
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -74,9 +117,9 @@ class ExerciseConfigActivity : AppCompatActivity() {
         val video = findViewById<WebView>(R.id.exercise_config_video)
         video.settings.javaScriptEnabled = true
 
-        val url = findViewById<EditText>(R.id.exercise_config_video_url).text.toString().trim()
+        videoUrl = findViewById<EditText>(R.id.exercise_config_video_url).text.toString().trim()
         val regex = Regex("(?:youtu\\.be/|youtube\\.com(?:/embed/|/watch\\?v=|/v/|/shorts/))([\\w-]{11})")
-        val match = regex.find(url)
+        val match = regex.find(videoUrl.toString())
         val videoId = match?.groups?.get(1)?.value
 
         if (videoId != null) {
@@ -85,15 +128,6 @@ class ExerciseConfigActivity : AppCompatActivity() {
             video.visibility = View.VISIBLE
         } else {
             video.visibility = View.GONE
-        }
-    }
-
-    private fun prepareLayout() {
-        lifecycleScope.launch {
-            setMuscleList()
-            setEquipmentList()
-            setExecutionSteps()
-            setExecutionTips()
         }
     }
 
@@ -120,6 +154,16 @@ class ExerciseConfigActivity : AppCompatActivity() {
         recycler.adapter = CheckBoxAdapter(options, selected, labelProvider)
     }
 
+    private fun addExecutionStep() {
+        executionSteps.add(ExerciseExecutionStep(0, 0, ""))
+        executionStepAdapter?.notifyItemInserted(executionSteps.lastIndex)
+    }
+
+    private fun addExecutionTip() {
+        executionTips.add(ExerciseExecutionTip(0, 0, ""))
+        executionTipAdapter?.notifyItemInserted(executionTips.lastIndex)
+    }
+
     private fun setExecutionSteps() {
         setExecutionStepsAndTips(
             R.id.exercise_config_execution_steps,
@@ -131,11 +175,6 @@ class ExerciseConfigActivity : AppCompatActivity() {
         )
     }
 
-    private fun addExecutionStep() {
-        executionSteps.add(ExerciseExecutionStep(0, 0, ""))
-        executionStepAdapter?.notifyItemInserted(executionSteps.lastIndex)
-    }
-
     private fun setExecutionTips() {
         setExecutionStepsAndTips(
             R.id.exercise_config_execution_tips,
@@ -145,11 +184,6 @@ class ExerciseConfigActivity : AppCompatActivity() {
             { item, newText -> item.tip = newText },
             { adapter -> executionTipAdapter = adapter }
         )
-    }
-
-    private fun addExecutionTip() {
-        executionTips.add(ExerciseExecutionTip(0, 0, ""))
-        executionTipAdapter?.notifyItemInserted(executionTips.lastIndex)
     }
 
     private fun <T> setExecutionStepsAndTips(
@@ -170,6 +204,93 @@ class ExerciseConfigActivity : AppCompatActivity() {
         val adapter = TextListAdapter(items, getText, setText)
         setAdapterRef(adapter)
         recycler.adapter = adapter
+    }
+
+    private fun setDifficultySpinner() {
+        difficultySpinner = findViewById<Spinner>(R.id.exercise_config_difficulty)
+
+        val difficultyValues = difficulties.map { it.name }
+        val adapter = ArrayAdapter(
+            this,
+            R.layout.item_spinner,
+            difficultyValues
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+
+        difficultySpinner.adapter = adapter
+
+        val index = difficulties.indexOf(Difficulty.BEGINNER)
+        difficultySpinner.setSelection(index)
+    }
+
+    private fun saveExercise() {
+        val name = findViewById<EditText>(R.id.exercise_config_name).text
+        if (name.isNullOrEmpty()) {
+            Toast.makeText(this, "Name is required", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val description = findViewById<EditText>(R.id.exercise_config_description).text
+        if (description.isNullOrEmpty()) {
+            Toast.makeText(this, "Description is required", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val difficulty = Difficulty.entries[difficultySpinner.selectedItemPosition]
+
+        if (selectedMuscles.isEmpty()) {
+            Toast.makeText(this, "Muscle is required", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (selectedEquipment.isEmpty()) {
+            Toast.makeText(this, "Equipment is required", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val steps = executionSteps.filter { it.description.isEmpty() }
+        if (steps.isEmpty()) {
+            Toast.makeText(this, "At least one execution step is required", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val tips = executionTips.filter { it.tip.isEmpty() }
+
+        val exercise = ExerciseData(
+            name = name.toString(),
+            description = description.toString(),
+            difficulty = difficulty,
+            isUserCreated = true,
+            isUserFavourite = false,
+            equipment = selectedEquipment,
+            muscles = selectedMuscles,
+            image = imageUri,
+            videoUrl = videoUrl,
+            executionSteps = steps.toMutableList(),
+            executionTips = tips.toMutableList(),
+        )
+
+        lifecycleScope.launch {
+            repository.upsertExercise(exercise)
+        }
+    }
+
+    private fun uriToBase64(uri: Uri?): String? {
+        if (uri == null) {
+            return null
+        }
+
+        return try {
+            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+            val outputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
+            val byteArray = outputStream.toByteArray()
+            Base64.encodeToString(byteArray, Base64.DEFAULT)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
 }

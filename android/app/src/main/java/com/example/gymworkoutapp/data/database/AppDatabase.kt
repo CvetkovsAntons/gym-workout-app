@@ -24,7 +24,7 @@ import com.example.gymworkoutapp.data.database.entities.User
         Exercise::class, ExerciseMuscle::class, ExerciseEquipment::class,
         ExerciseExecutionTip::class, ExerciseExecutionStep::class
     ],
-    version = 11
+    version = 12
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
