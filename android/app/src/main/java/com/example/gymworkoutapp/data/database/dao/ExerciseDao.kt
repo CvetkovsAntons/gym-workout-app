@@ -18,6 +18,10 @@ import com.example.gymworkoutapp.data.database.relations.ExerciseRelation
 @Dao
 interface ExerciseDao {
     @Transaction
+    @Query("SELECT * FROM exercise ORDER BY is_user_created, id DESC")
+    suspend fun getAll(): List<ExerciseRelation>?
+
+    @Transaction
     @Query("SELECT * FROM exercise WHERE id = :id")
     suspend fun get(id: Int): ExerciseRelation?
 

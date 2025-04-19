@@ -25,8 +25,6 @@ class TextListAdapter<T>(
         return ViewHolder(view)
     }
 
-    override fun getItemCount(): Int = items.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
 
@@ -47,5 +45,7 @@ class TextListAdapter<T>(
             }
         }
     }
+
+    override fun getItemCount(): Int = items.size
 
 }

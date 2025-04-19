@@ -249,13 +249,13 @@ class ExerciseConfigActivity : AppCompatActivity() {
             return
         }
 
-        val steps = executionSteps.filter { it.description.isEmpty() }
+        val steps = executionSteps.filter { it.description.isNotEmpty() }
         if (steps.isEmpty()) {
             Toast.makeText(this, "At least one execution step is required", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val tips = executionTips.filter { it.tip.isEmpty() }
+        val tips = executionTips.filter { it.tip.isNotEmpty() }
 
         val exercise = ExerciseData(
             name = name.toString(),
@@ -273,6 +273,7 @@ class ExerciseConfigActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repository.upsertExercise(exercise)
+            finish()
         }
     }
 

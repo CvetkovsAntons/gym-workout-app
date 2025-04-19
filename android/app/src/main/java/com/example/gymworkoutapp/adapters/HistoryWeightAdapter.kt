@@ -27,7 +27,8 @@ class HistoryWeightAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        holder.textWeight.text = "${item.weight} kg"
+        val weight = "${item.weight} kg"
+        holder.textWeight.text = weight
 
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
         holder.textDate.text = formatter.format(item.datetime)

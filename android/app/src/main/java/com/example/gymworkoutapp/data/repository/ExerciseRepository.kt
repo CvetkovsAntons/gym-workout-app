@@ -1,5 +1,6 @@
 package com.example.gymworkoutapp.data.repository
 
+import android.util.Log
 import com.example.gymworkoutapp.data.database.dao.ExerciseDao
 import com.example.gymworkoutapp.data.database.entities.Equipment
 import com.example.gymworkoutapp.data.database.entities.ExerciseEquipment
@@ -10,6 +11,14 @@ import com.example.gymworkoutapp.data.mappers.toExerciseEntity
 import com.example.gymworkoutapp.models.ExerciseData
 
 class ExerciseRepository(private val exerciseDao: ExerciseDao) {
+
+    suspend fun getAllExercises(): MutableList<ExerciseData> {
+        return exerciseDao.getAll()
+            ?.map { it.toExerciseData() }
+            ?.toMutableList()
+            ?: mutableListOf()
+    }
+
     suspend fun getExercise(id: Int): ExerciseData? {
         return exerciseDao.get(id)?.toExerciseData()
     }
@@ -17,7 +26,9 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao) {
     suspend fun upsertExercise(exerciseData: ExerciseData) {
         val exercise = exerciseData.toExerciseEntity()
         var exerciseId = exercise.id
-
+        Log.d("exercise_id", exerciseId.toString())
+        Log.d("exercise_id", exerciseData.toString())
+        Log.d("exercise_id", exercise.toString())
         if (exercise.id == 0) {
             exerciseId = exerciseDao.insert(exercise).toInt()
         } else {
@@ -28,17 +39,14 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao) {
 
             exerciseDao.update(exercise)
         }
+        Log.d("exercise_id", exerciseId.toString())
 
         exerciseData.muscles.forEach { muscle ->
-            exerciseDao.insert(
-                ExerciseMuscle(exercise.id, muscle.id)
-            )
+            exerciseDao.insert(ExerciseMuscle(exerciseId, muscle.id))
         }
 
         exerciseData.equipment.forEach { equipment ->
-            exerciseDao.insert(
-                ExerciseEquipment(exercise.id, equipment.id)
-            )
+            exerciseDao.insert(ExerciseEquipment(exerciseId, equipment.id))
         }
 
         exerciseData.executionSteps.forEach { step ->

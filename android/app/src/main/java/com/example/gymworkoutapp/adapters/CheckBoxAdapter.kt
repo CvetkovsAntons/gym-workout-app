@@ -22,8 +22,6 @@ class CheckBoxAdapter<T>(
         return ViewHolder(view)
     }
 
-    override fun getItemCount(): Int = items.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         holder.checkbox.text = label(item)
@@ -38,6 +36,6 @@ class CheckBoxAdapter<T>(
         }
     }
 
-    fun getSelectedItems(): List<T> = selectedItems
+    override fun getItemCount(): Int = items.size
 
 }
