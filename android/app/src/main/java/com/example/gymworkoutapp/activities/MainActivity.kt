@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.gymworkoutapp.App
 import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.data.mappers.isValid
+import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.fragments.ExerciseFragment
 import com.example.gymworkoutapp.fragments.WorkoutFragment
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userDataLauncher: ActivityResultLauncher<Intent>
     private var userData: UserData? = null
     private lateinit var userRepository: UserRepository
+    private lateinit var exerciseRepository: ExerciseRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         view.visibility = View.GONE
 
         userRepository = (application as App).userRepository
+        exerciseRepository = (application as App).exerciseRepository
 
         userDataLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -44,6 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         loadUserDataAndInitUI()
     }
+
     private fun loadUserDataAndInitUI() {
         val view = findViewById<ConstraintLayout>(R.id.activity_main_form)
 
@@ -58,7 +62,7 @@ class MainActivity : AppCompatActivity() {
             val page = intent.getStringExtra("fragment")
             if (supportFragmentManager.findFragmentById(R.id.flFragment) == null) {
                 val startFragment = when (page) {
-                    "exercisePage" -> ExerciseFragment(userRepository)
+                    "exercisePage" -> ExerciseFragment(exerciseRepository)
                     "resultsPage" -> ResultsFragment(userRepository)
                     "profilePage" -> ProfileFragment(userRepository)
                     else -> WorkoutFragment(userRepository)
@@ -69,7 +73,7 @@ class MainActivity : AppCompatActivity() {
             val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
             bottomNavigationView.setOnItemSelectedListener {
                 when (it.itemId) {
-                    R.id.Exercise -> switchFragment(ExerciseFragment(userRepository))
+                    R.id.Exercise -> switchFragment(ExerciseFragment(exerciseRepository))
                     R.id.Results -> switchFragment(ResultsFragment(userRepository))
                     R.id.Profile -> {
                         lifecycleScope.launch {

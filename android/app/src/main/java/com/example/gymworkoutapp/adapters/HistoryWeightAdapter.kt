@@ -12,22 +12,23 @@ import java.util.Locale
 
 class HistoryWeightAdapter(
     private val items: List<HistoryWeight>
-) : RecyclerView.Adapter<HistoryWeightAdapter.HistoryViewHolder>() {
+) : RecyclerView.Adapter<HistoryWeightAdapter.ViewHolder>() {
 
-    class HistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textWeight: TextView = itemView.findViewById(R.id.history_weight_weight)
         val textDate: TextView = itemView.findViewById(R.id.history_weight_date)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_history_weight, parent, false)
-        return HistoryViewHolder(view)
+        return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        holder.textWeight.text = "${item.weight} kg"
+        val weight = "${item.weight} kg"
+        holder.textWeight.text = weight
 
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
         holder.textDate.text = formatter.format(item.datetime)

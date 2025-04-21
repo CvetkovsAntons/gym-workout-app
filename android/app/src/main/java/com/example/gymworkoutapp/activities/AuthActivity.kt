@@ -15,6 +15,7 @@ import com.example.gymworkoutapp.auth.SessionManager
 import com.example.gymworkoutapp.network.client.ApiClient
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.data.sync.UserDataSyncManager
+import com.example.gymworkoutapp.enums.AuthMethod
 import com.example.gymworkoutapp.models.RequestAuth
 import com.example.gymworkoutapp.network.handlers.ApiErrorHandler
 import com.google.android.material.textfield.TextInputLayout
@@ -23,10 +24,6 @@ import kotlinx.coroutines.launch
 class AuthActivity : AppCompatActivity() {
 
     private lateinit var userRepository: UserRepository
-
-    enum class AuthMethod {
-        SIGN_IN, LOG_IN
-    }
 
     private var currentAuthMethod: AuthMethod = AuthMethod.LOG_IN
 

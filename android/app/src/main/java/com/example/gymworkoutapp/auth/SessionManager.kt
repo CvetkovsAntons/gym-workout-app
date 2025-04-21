@@ -2,10 +2,8 @@ package com.example.gymworkoutapp.auth
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.core.content.edit
 import com.example.gymworkoutapp.models.ResponseAuth
 import com.example.gymworkoutapp.network.auth.TokenManager
-import com.example.gymworkoutapp.network.auth.TokenManager.TokenType
 import com.example.gymworkoutapp.network.client.ApiClient
 import retrofit2.Response
 
