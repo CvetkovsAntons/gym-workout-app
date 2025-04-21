@@ -8,10 +8,7 @@ import com.example.gymworkoutapp.enums.Difficulty
 
 @Entity(
     tableName = "exercise",
-    indices = [
-        Index(value = ["name"], unique = true),
-        Index(value = ["video_url"], unique = true),
-    ]
+    indices = [Index(value = ["name"], unique = true)]
 )
 data class Exercise(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,

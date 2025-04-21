@@ -1,10 +1,13 @@
 package com.example.gymworkoutapp.data.database.entities
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(
     tableName = "muscle",
     indices = [Index(value = ["name"], unique = true)]
@@ -12,4 +15,4 @@ import androidx.room.PrimaryKey
 data class Muscle(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "name") val name: String
-)
+) : Parcelable

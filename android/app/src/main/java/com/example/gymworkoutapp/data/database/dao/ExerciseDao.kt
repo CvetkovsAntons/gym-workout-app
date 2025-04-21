@@ -1,6 +1,7 @@
 package com.example.gymworkoutapp.data.database.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -26,7 +27,7 @@ interface ExerciseDao {
     suspend fun get(id: Int): ExerciseRelation?
 
     @Transaction
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(exercise: Exercise): Long
 
     @Transaction
@@ -73,6 +74,9 @@ interface ExerciseDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(executionStep: ExerciseExecutionStep)
 
+    @Transaction
+    @Delete
+    suspend fun delete(exercise: Exercise)
 
     @Query("DELETE FROM exercise_muscle WHERE exercise_id = :exerciseId")
     suspend fun clearMuscles(exerciseId: Int)
@@ -91,5 +95,9 @@ interface ExerciseDao {
 
     @Query("SELECT * FROM equipment")
     suspend fun getEquipmentList(): List<Equipment>
+
+    @Transaction
+    @Query("SELECT * FROM exercise WHERE id != :id AND name = :name")
+    suspend fun getByNameAndVideoUrl(name: String, id: Int?): ExerciseRelation?
 
 }

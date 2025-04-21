@@ -57,8 +57,9 @@ class ExerciseFragment(
         buttonFilterOthers = view.findViewById(R.id.exercises_btn_created_by_others)
         buttonFilterDownloaded = view.findViewById(R.id.exercises_btn_downloaded)
 
-        setExerciseList()
-        setExerciseList()
+        lifecycleScope.launch {
+            setExerciseList()
+        }
 
         buttonFilterYou.setOnClickListener {
             changeFilter(Filter.CREATED_BY_YOU)
@@ -76,30 +77,28 @@ class ExerciseFragment(
 
     override fun onResume() {
         super.onResume()
-        prepareFilters()
-        setExerciseList()
-    }
 
-    private fun setExerciseList() {
-        lifecycleScope.launch {
-            exercises = repository.getAllExercises()
-            Log.d("exercise_id", exercises.toString())
-            val recycler = requireView().findViewById<RecyclerView>(R.id.exercises_list)
-            recycler.layoutManager = LinearLayoutManager(requireContext())
-
-            if (::exerciseListAdapter.isInitialized) {
-                exerciseListAdapter.updateItems(exercises)
-            } else {
-                exerciseListAdapter = ExerciseListAdapter(exercises)
-                recycler.adapter = exerciseListAdapter
-            }
-        }
-    }
-
-    private fun prepareFilters() {
         setFilterColor(Filter.CREATED_BY_YOU)
         setFilterColor(Filter.CREATED_BY_OTHERS)
         setFilterColor(Filter.DOWNLOADED)
+
+        lifecycleScope.launch {
+            setExerciseList()
+        }
+    }
+
+    private suspend fun setExerciseList() {
+        exercises = repository.getAllExercises()
+
+        val recycler = requireView().findViewById<RecyclerView>(R.id.exercises_list)
+        recycler.layoutManager = LinearLayoutManager(requireContext())
+
+        if (::exerciseListAdapter.isInitialized) {
+            exerciseListAdapter.updateItems(exercises)
+        } else {
+            exerciseListAdapter = ExerciseListAdapter(exercises, requireContext(), lifecycleScope, repository)
+            recycler.adapter = exerciseListAdapter
+        }
     }
 
     private fun changeFilter(filter: Filter) {
@@ -108,8 +107,12 @@ class ExerciseFragment(
         } else {
             selectedFilters.add(filter)
         }
+
         setFilterColor(filter)
-        setExerciseList()
+
+        lifecycleScope.launch {
+            setExerciseList()
+        }
     }
 
     private fun setFilterColor(filter: Filter) {

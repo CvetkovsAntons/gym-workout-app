@@ -26,9 +26,7 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao) {
     suspend fun upsertExercise(exerciseData: ExerciseData) {
         val exercise = exerciseData.toExerciseEntity()
         var exerciseId = exercise.id
-        Log.d("exercise_id", exerciseId.toString())
-        Log.d("exercise_id", exerciseData.toString())
-        Log.d("exercise_id", exercise.toString())
+
         if (exercise.id == 0) {
             exerciseId = exerciseDao.insert(exercise).toInt()
         } else {
@@ -39,20 +37,16 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao) {
 
             exerciseDao.update(exercise)
         }
-        Log.d("exercise_id", exerciseId.toString())
 
         exerciseData.muscles.forEach { muscle ->
             exerciseDao.insert(ExerciseMuscle(exerciseId, muscle.id))
         }
-
         exerciseData.equipment.forEach { equipment ->
             exerciseDao.insert(ExerciseEquipment(exerciseId, equipment.id))
         }
-
         exerciseData.executionSteps.forEach { step ->
             exerciseDao.insert(step.copy(exerciseId = exerciseId))
         }
-
         exerciseData.executionTips.forEach { tip ->
             exerciseDao.insert(tip.copy(exerciseId = exerciseId))
         }
@@ -98,6 +92,14 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao) {
 
     suspend fun getEquipmentList(): List<Equipment> {
         return exerciseDao.getEquipmentList()
+    }
+
+    suspend fun duplicateExists(exercise: ExerciseData): Boolean {
+        return exerciseDao.getByNameAndVideoUrl(exercise.name, exercise.id) != null
+    }
+
+    suspend fun deleteExercise(exercise: ExerciseData) {
+        exerciseDao.delete(exercise.toExerciseEntity())
     }
 
 }

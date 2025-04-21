@@ -1,9 +1,12 @@
 package com.example.gymworkoutapp.data.database.entities
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(
     tableName = "exercise_execution_step",
     primaryKeys = ["exercise_id", "order_num"],
@@ -20,4 +23,4 @@ data class ExerciseExecutionStep(
     @ColumnInfo(name = "exercise_id") val exerciseId: Int,
     @ColumnInfo(name = "order_num") var orderNum: Int,
     @ColumnInfo(name = "description") var description: String,
-)
+) : Parcelable

@@ -1,10 +1,13 @@
 package com.example.gymworkoutapp.activities
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
 import android.util.Base64
 import android.view.View
 import android.webkit.WebView
@@ -38,6 +41,79 @@ class ExerciseConfigActivity : AppCompatActivity() {
 
     private lateinit var repository: ExerciseRepository
 
+    private var exercise: ExerciseData? = null
+
+    private var executionStepAdapter: TextListAdapter<ExerciseExecutionStep>? = null
+    private var executionTipAdapter: TextListAdapter<ExerciseExecutionTip>? = null
+
+    private var selectedMuscles = mutableListOf<Muscle>()
+    private var selectedEquipment = mutableListOf<Equipment>()
+    private var executionSteps = mutableListOf<ExerciseExecutionStep>()
+    private var executionTips = mutableListOf<ExerciseExecutionTip>()
+
+    private val difficulties = Difficulty.entries
+
+    private lateinit var difficultySpinner: Spinner
+    private lateinit var videoUrlInput: EditText
+    private var videoUrl: String? = null
+    private var imageUri: String? = null
+
+    private lateinit var exerciseNameField: EditText
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        repository = (application as App).exerciseRepository
+
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_exercise_config)
+
+        exercise = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("exercise", ExerciseData::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra("exercise")
+        }
+
+        exerciseNameField = findViewById<EditText>(R.id.exercise_config_name)
+        videoUrlInput = findViewById<EditText>(R.id.exercise_config_video_url)
+
+        lifecycleScope.launch {
+            exercise?.let {
+                exerciseNameField.text = Editable.Factory.getInstance().newEditable(it.name)
+                findViewById<EditText>(R.id.exercise_config_description).text = Editable.Factory.getInstance().newEditable(it.description)
+                findViewById<EditText>(R.id.exercise_config_description).text = Editable.Factory.getInstance().newEditable(it.description)
+                videoUrlInput.text = Editable.Factory.getInstance().newEditable(it.videoUrl)
+            }
+
+            setMuscleList()
+            setEquipmentList()
+            setExecutionSteps()
+            setExecutionTips()
+            setDifficultySpinner()
+            setVideo()
+        }
+
+        exerciseNameField.requestFocus()
+
+        findViewById<Button>(R.id.exercise_config_btn_cancel).setOnClickListener {
+            finish()
+        }
+        findViewById<Button>(R.id.exercise_config_video_url_set_btn).setOnClickListener {
+            setVideo()
+        }
+        findViewById<Button>(R.id.exercise_config_execution_steps_add_btn).setOnClickListener {
+            addExecutionStep()
+        }
+        findViewById<Button>(R.id.exercise_config_execution_tips_add_btn).setOnClickListener {
+            addExecutionTip()
+        }
+        findViewById<Button>(R.id.exercise_config_image_select_btn).setOnClickListener {
+            galleryLauncher.launch("image/*")
+        }
+        findViewById<Button>(R.id.exercise_config_btn_save).setOnClickListener {
+            saveExercise()
+        }
+    }
+
     val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent(),
         fun(it: Uri?) {
             val galleryUri = it
@@ -61,54 +137,20 @@ class ExerciseConfigActivity : AppCompatActivity() {
         }
     )
 
-    private var executionStepAdapter: TextListAdapter<ExerciseExecutionStep>? = null
-    private var executionTipAdapter: TextListAdapter<ExerciseExecutionTip>? = null
-
-    private var selectedMuscles = mutableListOf<Muscle>()
-    private var selectedEquipment = mutableListOf<Equipment>()
-    private var executionSteps = mutableListOf<ExerciseExecutionStep>()
-    private var executionTips = mutableListOf<ExerciseExecutionTip>()
-
-    private val difficulties = Difficulty.entries
-
-    private lateinit var difficultySpinner: Spinner
-    private var videoUrl: String? = null
-    private var imageUri: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        repository = (application as App).exerciseRepository
-
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_exercise_config)
-
-        lifecycleScope.launch {
-            setMuscleList()
-            setEquipmentList()
-            setExecutionSteps()
-            setExecutionTips()
-            setDifficultySpinner()
-            setVideo()
+    private fun uriToBase64(uri: Uri?): String? {
+        if (uri == null) {
+            return null
         }
 
-        findViewById<EditText>(R.id.exercise_config_name).requestFocus()
-
-        findViewById<Button>(R.id.exercise_config_btn_cancel).setOnClickListener {
-            finish()
-        }
-        findViewById<Button>(R.id.exercise_config_video_url_set_btn).setOnClickListener {
-            setVideo()
-        }
-        findViewById<Button>(R.id.exercise_config_execution_steps_add_btn).setOnClickListener {
-            addExecutionStep()
-        }
-        findViewById<Button>(R.id.exercise_config_execution_tips_add_btn).setOnClickListener {
-            addExecutionTip()
-        }
-        findViewById<Button>(R.id.exercise_config_image_select_btn).setOnClickListener {
-            galleryLauncher.launch("image/*")
-        }
-        findViewById<Button>(R.id.exercise_config_btn_save).setOnClickListener {
-            saveExercise()
+        return try {
+            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+            val outputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
+            val byteArray = outputStream.toByteArray()
+            Base64.encodeToString(byteArray, Base64.DEFAULT)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
@@ -117,7 +159,7 @@ class ExerciseConfigActivity : AppCompatActivity() {
         val video = findViewById<WebView>(R.id.exercise_config_video)
         video.settings.javaScriptEnabled = true
 
-        videoUrl = findViewById<EditText>(R.id.exercise_config_video_url).text.toString().trim()
+        videoUrl = videoUrlInput.text.toString().trim()
         val regex = Regex("(?:youtu\\.be/|youtube\\.com(?:/embed/|/watch\\?v=|/v/|/shorts/))([\\w-]{11})")
         val match = regex.find(videoUrl.toString())
         val videoId = match?.groups?.get(1)?.value
@@ -132,12 +174,16 @@ class ExerciseConfigActivity : AppCompatActivity() {
     }
 
     private suspend fun setMuscleList() {
+        exercise?.let { selectedMuscles = it.muscles }
+
         setList(R.id.exercise_config_muscles, repository.getMuscleList(), selectedMuscles) {
             it.name
         }
     }
 
     private suspend fun setEquipmentList() {
+        exercise?.let { selectedEquipment = it.equipment }
+
         setList(R.id.exercise_config_equipment, repository.getEquipmentList(), selectedEquipment) {
             it.name
         }
@@ -165,6 +211,8 @@ class ExerciseConfigActivity : AppCompatActivity() {
     }
 
     private fun setExecutionSteps() {
+        exercise?.let { executionSteps = it.executionSteps }
+
         setExecutionStepsAndTips(
             R.id.exercise_config_execution_steps,
             executionSteps,
@@ -176,6 +224,8 @@ class ExerciseConfigActivity : AppCompatActivity() {
     }
 
     private fun setExecutionTips() {
+        exercise?.let { executionTips = it.executionTips }
+
         setExecutionStepsAndTips(
             R.id.exercise_config_execution_tips,
             executionTips,
@@ -220,47 +270,43 @@ class ExerciseConfigActivity : AppCompatActivity() {
 
         difficultySpinner.adapter = adapter
 
-        val index = difficulties.indexOf(Difficulty.BEGINNER)
+        val index = exercise?.let { difficulties.indexOf(it.difficulty) }
+            ?: difficulties.indexOf(Difficulty.BEGINNER)
+
         difficultySpinner.setSelection(index)
     }
 
     private fun saveExercise() {
-        val name = findViewById<EditText>(R.id.exercise_config_name).text
-        if (name.isNullOrEmpty()) {
-            Toast.makeText(this, "Name is required", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val description = findViewById<EditText>(R.id.exercise_config_description).text
-        if (description.isNullOrEmpty()) {
-            Toast.makeText(this, "Description is required", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val difficulty = Difficulty.entries[difficultySpinner.selectedItemPosition]
-
-        if (selectedMuscles.isEmpty()) {
-            Toast.makeText(this, "Muscle is required", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (selectedEquipment.isEmpty()) {
-            Toast.makeText(this, "Equipment is required", Toast.LENGTH_SHORT).show()
-            return
-        }
-
+        val name = exerciseNameField.text
         val steps = executionSteps.filter { it.description.isNotEmpty() }
-        if (steps.isEmpty()) {
-            Toast.makeText(this, "At least one execution step is required", Toast.LENGTH_SHORT).show()
+        val description = findViewById<EditText>(R.id.exercise_config_description).text
+
+        if (name.isNullOrEmpty()) {
+            toast("Name is required")
             return
         }
-
-        val tips = executionTips.filter { it.tip.isNotEmpty() }
+        if (description.isNullOrEmpty()) {
+            toast("Description is required")
+            return
+        }
+        if (selectedMuscles.isEmpty()) {
+            toast("Muscle is required")
+            return
+        }
+        if (selectedEquipment.isEmpty()) {
+            toast("Equipment is required")
+            return
+        }
+        if (steps.isEmpty()) {
+            toast("At least one execution step is required")
+            return
+        }
 
         val exercise = ExerciseData(
+            id = exercise?.id ?: 0,
             name = name.toString(),
             description = description.toString(),
-            difficulty = difficulty,
+            difficulty = Difficulty.entries[difficultySpinner.selectedItemPosition],
             isUserCreated = true,
             isUserFavourite = false,
             equipment = selectedEquipment,
@@ -268,30 +314,22 @@ class ExerciseConfigActivity : AppCompatActivity() {
             image = imageUri,
             videoUrl = videoUrl,
             executionSteps = steps.toMutableList(),
-            executionTips = tips.toMutableList(),
+            executionTips = (executionTips.filter { it.tip.isNotEmpty() }).toMutableList(),
         )
 
         lifecycleScope.launch {
+            if (repository.duplicateExists(exercise)) {
+                toast("Name or video URL is already taken")
+                return@launch
+            }
+
             repository.upsertExercise(exercise)
             finish()
         }
     }
 
-    private fun uriToBase64(uri: Uri?): String? {
-        if (uri == null) {
-            return null
-        }
-
-        return try {
-            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-            val outputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
-            val byteArray = outputStream.toByteArray()
-            Base64.encodeToString(byteArray, Base64.DEFAULT)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+    private fun toast(message: String, context: Context = this@ExerciseConfigActivity) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
 }
