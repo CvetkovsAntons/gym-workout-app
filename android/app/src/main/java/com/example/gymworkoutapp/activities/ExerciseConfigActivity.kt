@@ -3,6 +3,7 @@ package com.example.gymworkoutapp.activities
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -82,6 +83,27 @@ class ExerciseConfigActivity : AppCompatActivity() {
                 findViewById<EditText>(R.id.exercise_config_description).text = Editable.Factory.getInstance().newEditable(it.description)
                 findViewById<EditText>(R.id.exercise_config_description).text = Editable.Factory.getInstance().newEditable(it.description)
                 videoUrlInput.text = Editable.Factory.getInstance().newEditable(it.videoUrl)
+
+                val image = repository.getExerciseImage(it)
+                val imageView = findViewById<ImageView>(R.id.exercise_config_image)
+                val imageUriTextView = findViewById<TextView>(R.id.exercise_config_image_uri)
+
+                if (!image.isNullOrEmpty()) {
+                    try {
+                        val imageBytes = Base64.decode(image, Base64.DEFAULT)
+                        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                        imageView.setImageBitmap(bitmap)
+                        imageView.visibility = View.VISIBLE
+                        imageUriTextView.text = "Loaded from saved image"
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        imageView.visibility = View.GONE
+                        imageUriTextView.text = "Failed to load image"
+                    }
+                } else {
+                    imageView.visibility = View.GONE
+                    imageUriTextView.text = "Image is not selected..."
+                }
             }
 
             setMuscleList()

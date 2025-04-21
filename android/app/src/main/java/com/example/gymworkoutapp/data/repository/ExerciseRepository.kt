@@ -1,6 +1,5 @@
 package com.example.gymworkoutapp.data.repository
 
-import android.util.Log
 import com.example.gymworkoutapp.data.database.dao.ExerciseDao
 import com.example.gymworkoutapp.data.database.entities.Equipment
 import com.example.gymworkoutapp.data.database.entities.ExerciseEquipment
@@ -10,17 +9,17 @@ import com.example.gymworkoutapp.data.mappers.toExerciseData
 import com.example.gymworkoutapp.data.mappers.toExerciseEntity
 import com.example.gymworkoutapp.models.ExerciseData
 
-class ExerciseRepository(private val exerciseDao: ExerciseDao) {
+class ExerciseRepository(private val dao: ExerciseDao) {
 
     suspend fun getAllExercises(): MutableList<ExerciseData> {
-        return exerciseDao.getAll()
+        return dao.getAll()
             ?.map { it.toExerciseData() }
             ?.toMutableList()
             ?: mutableListOf()
     }
 
     suspend fun getExercise(id: Int): ExerciseData? {
-        return exerciseDao.get(id)?.toExerciseData()
+        return dao.get(id)?.toExerciseData()
     }
 
     suspend fun upsertExercise(exerciseData: ExerciseData) {
@@ -28,27 +27,27 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao) {
         var exerciseId = exercise.id
 
         if (exercise.id == 0) {
-            exerciseId = exerciseDao.insert(exercise).toInt()
+            exerciseId = dao.insert(exercise).toInt()
         } else {
-            exerciseDao.clearMuscles(exercise.id)
-            exerciseDao.clearEquipment(exercise.id)
-            exerciseDao.clearExecutionTips(exercise.id)
-            exerciseDao.clearExecutionSteps(exercise.id)
+            dao.clearMuscles(exercise.id)
+            dao.clearEquipment(exercise.id)
+            dao.clearExecutionTips(exercise.id)
+            dao.clearExecutionSteps(exercise.id)
 
-            exerciseDao.update(exercise)
+            dao.update(exercise)
         }
 
         exerciseData.muscles.forEach { muscle ->
-            exerciseDao.insert(ExerciseMuscle(exerciseId, muscle.id))
+            dao.insert(ExerciseMuscle(exerciseId, muscle.id))
         }
         exerciseData.equipment.forEach { equipment ->
-            exerciseDao.insert(ExerciseEquipment(exerciseId, equipment.id))
+            dao.insert(ExerciseEquipment(exerciseId, equipment.id))
         }
         exerciseData.executionSteps.forEach { step ->
-            exerciseDao.insert(step.copy(exerciseId = exerciseId))
+            dao.insert(step.copy(exerciseId = exerciseId))
         }
         exerciseData.executionTips.forEach { tip ->
-            exerciseDao.insert(tip.copy(exerciseId = exerciseId))
+            dao.insert(tip.copy(exerciseId = exerciseId))
         }
     }
 
@@ -65,11 +64,11 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao) {
             Muscle(id = 0, name = "Calves"),
             Muscle(id = 0, name = "Glutes"),
         )
-        defaultMuscles.forEach { exerciseDao.insert(it) }
+        defaultMuscles.forEach { dao.insert(it) }
     }
 
     suspend fun getMuscleList(): List<Muscle> {
-        return exerciseDao.getMuscleList()
+        return dao.getMuscleList()
     }
 
     suspend fun insertDefaultEquipment() {
@@ -87,19 +86,26 @@ class ExerciseRepository(private val exerciseDao: ExerciseDao) {
             Equipment(id = 0, name = "Dip bar"),
             Equipment(id = 0, name = "Rings"),
         )
-        defaultMuscles.forEach { exerciseDao.insert(it) }
+        defaultMuscles.forEach { dao.insert(it) }
     }
 
     suspend fun getEquipmentList(): List<Equipment> {
-        return exerciseDao.getEquipmentList()
+        return dao.getEquipmentList()
     }
 
     suspend fun duplicateExists(exercise: ExerciseData): Boolean {
-        return exerciseDao.getByNameAndVideoUrl(exercise.name, exercise.id) != null
+        return dao.getByNameAndVideoUrl(exercise.name, exercise.id) != null
     }
 
     suspend fun deleteExercise(exercise: ExerciseData) {
-        exerciseDao.delete(exercise.toExerciseEntity())
+        dao.delete(exercise.toExerciseEntity())
+    }
+
+    suspend fun getExerciseImage(exercise: ExerciseData): String? {
+        if (exercise.id == 0) {
+            return null
+        }
+        return dao.getExerciseImage(exercise.id)
     }
 
 }

@@ -59,7 +59,7 @@ class ExerciseListAdapter(
 
         holder.updateButton.setOnClickListener {
             val intent = Intent(context, ExerciseConfigActivity::class.java)
-            intent.putExtra("exercise", item)
+            intent.putExtra("exercise", item.copy(image = null))
             context.startActivity(intent)
         }
         holder.deleteButton.setOnClickListener {
