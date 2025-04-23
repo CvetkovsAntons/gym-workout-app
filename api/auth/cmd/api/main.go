@@ -7,13 +7,20 @@ import (
 	"github.com/CvetkovsAntons/gwa-api-auth-service/internal/env"
 	"github.com/CvetkovsAntons/gwa-api-auth-service/internal/handlers"
 	"github.com/CvetkovsAntons/gwa-api-auth-service/internal/middleware"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 )
 
 func main() {
-	err := database.InitMongoDBClient()
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+		return
+	}
+
+	err = database.InitMongoDBClient()
 	if err != nil {
 		log.Fatal(err)
 		return
