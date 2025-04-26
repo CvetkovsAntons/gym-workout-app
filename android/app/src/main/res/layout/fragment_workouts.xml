@@ -20,61 +20,62 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/workouts_select_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/workouts_title"
-        app:layout_constraintBottom_toTopOf="@id/workouts_list">
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/workouts_btn_created_by_you"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Created by you"
-            android:textColor="@color/secondary"
-            android:layout_marginEnd="2dp"
-            android:layout_marginStart="4dp"
-            android:textSize="8dp"
-            app:cornerRadius="8dp"
-            app:backgroundTint="@color/primary_lighter" />
+<!--    <LinearLayout-->
+<!--        android:id="@+id/workouts_select_list"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/workouts_title"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/workouts_list">-->
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/workouts_btn_created_by_you"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="Created by you"-->
+<!--            android:textColor="@color/secondary"-->
+<!--            android:layout_marginEnd="2dp"-->
+<!--            android:layout_marginStart="4dp"-->
+<!--            android:textSize="8dp"-->
+<!--            app:cornerRadius="8dp"-->
+<!--            app:backgroundTint="@color/primary_lighter" />-->
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/workouts_btn_created_by_others"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Created by others"
-            android:textColor="@color/secondary"
-            android:layout_marginEnd="4dp"
-            android:layout_marginStart="2dp"
-            android:textSize="8dp"
-            app:cornerRadius="8dp"
-            app:backgroundTint="@color/primary_lighter" />
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/workouts_btn_created_by_others"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="Created by others"-->
+<!--            android:textColor="@color/secondary"-->
+<!--            android:layout_marginEnd="4dp"-->
+<!--            android:layout_marginStart="2dp"-->
+<!--            android:textSize="8dp"-->
+<!--            app:cornerRadius="8dp"-->
+<!--            app:backgroundTint="@color/primary_lighter" />-->
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/workouts_btn_downloaded"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Downloaded"
-            android:textColor="@color/secondary"
-            android:layout_marginEnd="4dp"
-            android:layout_marginStart="2dp"
-            android:textSize="8dp"
-            app:cornerRadius="8dp"
-            app:backgroundTint="@color/primary_lighter" />
-    </LinearLayout>
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/workouts_btn_downloaded"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="Downloaded"-->
+<!--            android:textColor="@color/secondary"-->
+<!--            android:layout_marginEnd="4dp"-->
+<!--            android:layout_marginStart="2dp"-->
+<!--            android:textSize="8dp"-->
+<!--            app:cornerRadius="8dp"-->
+<!--            app:backgroundTint="@color/primary_lighter" />-->
+<!--    </LinearLayout>-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/workouts_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="108dp"
+        android:paddingTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/workouts_select_list"
+        app:layout_constraintTop_toBottomOf="@id/workouts_title"
         tools:listitem="@layout/item_workout"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
