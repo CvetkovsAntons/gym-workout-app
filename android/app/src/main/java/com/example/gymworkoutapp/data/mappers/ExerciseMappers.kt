@@ -1,10 +1,13 @@
 package com.example.gymworkoutapp.data.mappers
 
 import com.example.gymworkoutapp.data.database.entities.Exercise
+import com.example.gymworkoutapp.data.database.entities.WorkoutExerciseSet
 import com.example.gymworkoutapp.data.database.relations.ExerciseRelation
 import com.example.gymworkoutapp.models.ExerciseData
+import com.example.gymworkoutapp.models.WorkoutExerciseData
+import com.example.gymworkoutapp.models.WorkoutExerciseSetData
 
-fun ExerciseRelation.toExerciseData() = ExerciseData(
+fun ExerciseRelation.toData() = ExerciseData(
     id = exercise.id,
     name = exercise.name,
     description = exercise.description,
@@ -19,7 +22,7 @@ fun ExerciseRelation.toExerciseData() = ExerciseData(
     executionTips = executionTips.toMutableList()
 )
 
-fun ExerciseData.toExerciseEntity() = Exercise(
+fun ExerciseData.toEntity() = Exercise(
     id,
     name,
     description,
@@ -28,4 +31,22 @@ fun ExerciseData.toExerciseEntity() = Exercise(
     difficulty,
     isUserCreated,
     isUserFavourite
+)
+
+fun ExerciseData.toExerciseRelation() = ExerciseRelation(
+    exercise = this.toEntity(),
+    muscles = this.muscles,
+    equipment = this.equipment,
+    executionSteps = this.executionSteps,
+    executionTips = this.executionTips
+)
+
+fun ExerciseData.toWorkoutExerciseData(orderNum: Int) = WorkoutExerciseData(
+    exercise = this,
+    orderNum = orderNum,
+    sets = mutableListOf<WorkoutExerciseSetData>(WorkoutExerciseSetData(
+        orderNum = 0,
+        reps = 0,
+        weight = 0.toFloat()
+    ))
 )

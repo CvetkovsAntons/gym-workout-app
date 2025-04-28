@@ -22,7 +22,7 @@ import androidx.room.Index
 )
 data class WorkoutExerciseSet(
     @ColumnInfo(name = "workout_exercise_id") val workoutExerciseId: Int,
-    @ColumnInfo(name = "order_num") val image: Int,
-    @ColumnInfo(name = "reps") val reps: Int,
-    @ColumnInfo(name = "weight") val weight: Float,
+    @ColumnInfo(name = "order_num") var orderNum: Int,
+    @ColumnInfo(name = "reps") var reps: Int,
+    @ColumnInfo(name = "weight") var weight: Float,
 )

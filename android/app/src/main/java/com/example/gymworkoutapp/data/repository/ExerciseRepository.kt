@@ -5,25 +5,25 @@ import com.example.gymworkoutapp.data.database.entities.Equipment
 import com.example.gymworkoutapp.data.database.entities.ExerciseEquipment
 import com.example.gymworkoutapp.data.database.entities.ExerciseMuscle
 import com.example.gymworkoutapp.data.database.entities.Muscle
-import com.example.gymworkoutapp.data.mappers.toExerciseData
-import com.example.gymworkoutapp.data.mappers.toExerciseEntity
+import com.example.gymworkoutapp.data.mappers.toData
+import com.example.gymworkoutapp.data.mappers.toEntity
 import com.example.gymworkoutapp.models.ExerciseData
 
 class ExerciseRepository(private val dao: ExerciseDao) {
 
     suspend fun getAllExercises(): MutableList<ExerciseData> {
         return dao.getAll()
-            ?.map { it.toExerciseData() }
+            ?.map { it.toData() }
             ?.toMutableList()
             ?: mutableListOf()
     }
 
     suspend fun getExercise(id: Int): ExerciseData? {
-        return dao.get(id)?.toExerciseData()
+        return dao.get(id)?.toData()
     }
 
     suspend fun upsertExercise(exerciseData: ExerciseData) {
-        val exercise = exerciseData.toExerciseEntity()
+        val exercise = exerciseData.toEntity()
         var exerciseId = exercise.id
 
         if (exercise.id == 0) {
@@ -98,7 +98,7 @@ class ExerciseRepository(private val dao: ExerciseDao) {
     }
 
     suspend fun deleteExercise(exercise: ExerciseData) {
-        dao.delete(exercise.toExerciseEntity())
+        dao.delete(exercise.toEntity())
     }
 
     suspend fun getExerciseImage(exercise: ExerciseData): String? {

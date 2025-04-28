@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -23,20 +24,20 @@ import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.data.repository.UserRepository
 import com.example.gymworkoutapp.enums.Difficulty
 import com.example.gymworkoutapp.enums.Filter
+import com.example.gymworkoutapp.listeners.OnExerciseSelectedListener
 import com.example.gymworkoutapp.models.ExerciseData
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 
-class ExerciseFragment(private var repository: ExerciseRepository) : Fragment() {
-
-//    private lateinit var buttonFilterYou: MaterialButton
-//    private lateinit var buttonFilterOthers: MaterialButton
-//    private lateinit var buttonFilterDownloaded: MaterialButton
+class ExerciseFragment(
+    private var repository: ExerciseRepository,
+    private val isModal: Boolean = false,
+    private val exerciseSelectedListener: OnExerciseSelectedListener? = null
+) : Fragment() {
 
     private lateinit var exerciseListAdapter: ExerciseListAdapter
 
-//    private var selectedFilters = mutableListOf<Filter>()
     private var exercises = mutableListOf<ExerciseData>()
 
 
@@ -51,34 +52,24 @@ class ExerciseFragment(private var repository: ExerciseRepository) : Fragment() 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        buttonFilterYou = view.findViewById(R.id.exercises_btn_created_by_you)
-//        buttonFilterOthers = view.findViewById(R.id.exercises_btn_created_by_others)
-//        buttonFilterDownloaded = view.findViewById(R.id.exercises_btn_downloaded)
-
         lifecycleScope.launch {
             setExerciseList()
         }
 
-//        buttonFilterYou.setOnClickListener {
-//            changeFilter(Filter.CREATED_BY_YOU)
-//        }
-//        buttonFilterOthers.setOnClickListener {
-//            changeFilter(Filter.CREATED_BY_OTHERS)
-//        }
-//        buttonFilterDownloaded.setOnClickListener {
-//            changeFilter(Filter.DOWNLOADED)
-//        }
-        view.findViewById<FloatingActionButton>(R.id.exercises_create).setOnClickListener {
-            startActivity(Intent(activity, ExerciseConfigActivity::class.java))
+        val createButton = view.findViewById<FloatingActionButton>(R.id.exercises_create)
+
+        if (isModal) {
+            createButton.visibility = View.GONE
+            view.findViewById<TextView>(R.id.exercises_title).text = "Choose an exercise"
+        } else {
+            createButton.setOnClickListener {
+                startActivity(Intent(activity, ExerciseConfigActivity::class.java))
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
-
-//        setFilterColor(Filter.CREATED_BY_YOU)
-//        setFilterColor(Filter.CREATED_BY_OTHERS)
-//        setFilterColor(Filter.DOWNLOADED)
 
         lifecycleScope.launch {
             setExerciseList()
@@ -94,38 +85,16 @@ class ExerciseFragment(private var repository: ExerciseRepository) : Fragment() 
         if (::exerciseListAdapter.isInitialized) {
             exerciseListAdapter.updateItems(exercises)
         } else {
-            exerciseListAdapter = ExerciseListAdapter(exercises, requireContext(), lifecycleScope, repository)
+            exerciseListAdapter = ExerciseListAdapter(
+                exercises,
+                requireContext(),
+                lifecycleScope,
+                repository,
+                isModal,
+                exerciseSelectedListener
+            )
             recycler.adapter = exerciseListAdapter
         }
     }
-
-//    private fun changeFilter(filter: Filter) {
-//        if (selectedFilters.contains(filter)) {
-//            selectedFilters.remove(filter)
-//        } else {
-//            selectedFilters.add(filter)
-//        }
-//
-//        setFilterColor(filter)
-//
-//        lifecycleScope.launch {
-//            setExerciseList()
-//        }
-//    }
-
-//    private fun setFilterColor(filter: Filter) {
-//        val button = when (filter) {
-//            Filter.CREATED_BY_YOU -> buttonFilterYou
-//            Filter.CREATED_BY_OTHERS -> buttonFilterOthers
-//            Filter.DOWNLOADED -> buttonFilterDownloaded
-//        }
-//
-//        val selectedColor = ContextCompat.getColor(requireContext(), R.color.primary_darker)
-//        val unselectedColor = ContextCompat.getColor(requireContext(), R.color.primary_lighter)
-//
-//        button.backgroundTintList = ColorStateList.valueOf(
-//            if (filter in selectedFilters) selectedColor else unselectedColor
-//        )
-//    }
 
 }

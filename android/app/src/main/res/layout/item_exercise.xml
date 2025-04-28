@@ -128,6 +128,16 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
+            android:id="@+id/view_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_view"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="View"
+            android:visibility="gone"
+            app:tint="@color/secondary"/>
+
+        <ImageView
             android:id="@+id/update_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"

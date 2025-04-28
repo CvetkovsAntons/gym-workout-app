@@ -35,6 +35,8 @@ import com.example.gymworkoutapp.data.database.entities.Muscle
 import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.enums.Difficulty
 import com.example.gymworkoutapp.models.ExerciseData
+import com.example.gymworkoutapp.utils.base64ToBitmap
+import com.example.gymworkoutapp.utils.toBase64
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
@@ -84,15 +86,13 @@ class ExerciseConfigActivity : AppCompatActivity() {
                 findViewById<EditText>(R.id.exercise_config_description).text = Editable.Factory.getInstance().newEditable(it.description)
                 videoUrlInput.text = Editable.Factory.getInstance().newEditable(it.videoUrl)
 
-                val image = repository.getExerciseImage(it)
+                val image = repository.getExerciseImage(it)?.base64ToBitmap()
                 val imageView = findViewById<ImageView>(R.id.exercise_config_image)
                 val imageUriTextView = findViewById<TextView>(R.id.exercise_config_image_uri)
 
-                if (!image.isNullOrEmpty()) {
+                if (image != null) {
                     try {
-                        val imageBytes = Base64.decode(image, Base64.DEFAULT)
-                        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                        imageView.setImageBitmap(bitmap)
+                        imageView.setImageBitmap(image)
                         imageView.visibility = View.VISIBLE
                         imageUriTextView.text = "Loaded from saved image"
                     } catch (e: Exception) {
@@ -152,29 +152,12 @@ class ExerciseConfigActivity : AppCompatActivity() {
                     imageUriTextView.text = "Image is not selected..."
                 }
 
-                imageUri = uriToBase64(galleryUri)
+                imageUri = galleryUri.toBase64(this)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     )
-
-    private fun uriToBase64(uri: Uri?): String? {
-        if (uri == null) {
-            return null
-        }
-
-        return try {
-            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-            val outputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
-            val byteArray = outputStream.toByteArray()
-            Base64.encodeToString(byteArray, Base64.DEFAULT)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun setVideo() {

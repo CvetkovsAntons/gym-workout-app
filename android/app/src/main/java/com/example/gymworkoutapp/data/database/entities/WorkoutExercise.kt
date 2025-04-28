@@ -33,5 +33,5 @@ data class WorkoutExercise(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "workout_id") val workoutId: Int,
     @ColumnInfo(name = "exercise_id") val exerciseId: Int,
-    @ColumnInfo(name = "order_num") val image: Int,
+    @ColumnInfo(name = "order_num") val orderNum: Int,
 )

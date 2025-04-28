@@ -10,11 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.activities.ExerciseConfigActivity
 import com.example.gymworkoutapp.data.repository.ExerciseRepository
+import com.example.gymworkoutapp.listeners.OnExerciseSelectedListener
 import com.example.gymworkoutapp.models.ExerciseData
 import com.google.android.material.imageview.ShapeableImageView
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +24,9 @@ class ExerciseListAdapter(
     private var items: MutableList<ExerciseData>,
     private val context: Context,
     private val lifecycleScope: CoroutineScope,
-    private val repository: ExerciseRepository
+    private val repository: ExerciseRepository,
+    private val isModal: Boolean = false,
+    private val exerciseSelectedListener: OnExerciseSelectedListener? = null
 ) : RecyclerView.Adapter<ExerciseListAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -57,18 +59,27 @@ class ExerciseListAdapter(
         holder.muscles.text = displayListWithLimit(item.muscles, { it.name })
         holder.equipment.text = displayListWithLimit(item.equipment, { it.name })
 
-        holder.updateButton.setOnClickListener {
-            val intent = Intent(context, ExerciseConfigActivity::class.java)
-            intent.putExtra("exercise", item.copy(image = null))
-            context.startActivity(intent)
-        }
-        holder.deleteButton.setOnClickListener {
-            AlertDialog.Builder(context)
-                .setTitle("Delete Exercise")
-                .setMessage("Are you sure you want to permanently delete exercise?")
-                .setPositiveButton("Yes") { _, _ -> deleteExercise(item, position) }
-                .setNegativeButton("Cancel", null)
-                .show()
+        if (isModal) {
+            holder.updateButton.visibility = View.GONE
+            holder.deleteButton.visibility = View.GONE
+
+            holder.itemView.setOnClickListener {
+                exerciseSelectedListener?.onExerciseSelected(item.copy(image = null))
+            }
+        } else {
+            holder.updateButton.setOnClickListener {
+                val intent = Intent(context, ExerciseConfigActivity::class.java)
+                intent.putExtra("exercise", item.copy(image = null))
+                context.startActivity(intent)
+            }
+            holder.deleteButton.setOnClickListener {
+                AlertDialog.Builder(context)
+                    .setTitle("Delete Exercise")
+                    .setMessage("Are you sure you want to permanently delete exercise?")
+                    .setPositiveButton("Yes") { _, _ -> deleteExercise(item, position) }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
         }
     }
 
