@@ -3,17 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/rounded_container_lighter"
-    android:layout_marginBottom="5dp"
-    android:layout_marginStart="5dp"
-    android:layout_marginEnd="5dp">
+    android:background="@drawable/container_bordered"
+    android:layout_marginBottom="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="sets"
+        app:layout_constraintBottom_toTopOf="@+id/sets"
         android:id="@+id/exercise_data"
         android:paddingLeft="8dp">
 
@@ -135,12 +133,12 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <ImageView
-                android:id="@+id/drag_icon"
+                android:id="@+id/delete_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_drage_n_drop"
+                android:src="@drawable/ic_delete"
                 android:contentDescription="Delete"
-                app:tint="@color/secondary"/>
+                app:tint="@color/danger"/>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -150,22 +148,21 @@
         app:layout_constraintTop_toBottomOf="@+id/exercise_data"
         app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="vertical"
-        android:layout_margin="8dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:background="@drawable/rounded_container"
+        android:padding="8dp"
         android:id="@+id/sets">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/set_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+            android:background="@color/primary_lighter" />
+
         <Button
+            android:id="@+id/add_set"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ADD"
-            android:backgroundTint="@color/primary_darker" />
+            android:backgroundTint="@color/primary_darker"
+            android:text="+ ADD A SET" />
     </LinearLayout>
 
 

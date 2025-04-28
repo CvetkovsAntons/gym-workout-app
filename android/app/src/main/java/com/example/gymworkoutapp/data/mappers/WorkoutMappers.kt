@@ -29,7 +29,7 @@ fun WorkoutData.toEntity() = Workout(
 fun WorkoutExerciseRelation.toData() = WorkoutExerciseData(
     exercise = exerciseRelation.toData(),
     orderNum = workoutExercise.orderNum,
-    sets = sets.toMutableList()
+    sets = sets.map { it.toData() }.toMutableList()
 )
 
 fun WorkoutExerciseData.toEntity(workoutId: Int) = WorkoutExercise(
@@ -44,7 +44,7 @@ fun WorkoutExerciseSet.toData() = WorkoutExerciseSetData(
     weight = weight
 )
 
-fun WorkoutExerciseSet.toEntity(workoutExerciseId: Int) = WorkoutExerciseSet(
+fun WorkoutExerciseSetData.toEntity(workoutExerciseId: Int) = WorkoutExerciseSet(
     workoutExerciseId = workoutExerciseId,
     orderNum = orderNum,
     reps = reps,
