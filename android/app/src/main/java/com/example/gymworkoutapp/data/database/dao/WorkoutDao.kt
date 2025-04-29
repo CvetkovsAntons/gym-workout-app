@@ -23,15 +23,15 @@ interface WorkoutDao {
     suspend fun get(id: Int): WorkoutRelation?
 
     @Transaction
-    @Query("SELECT * FROM workout WHERE name = :name")
-    suspend fun getByName(name: String): WorkoutRelation?
+    @Query("SELECT * FROM workout WHERE id != :id AND name = :name")
+    suspend fun searchForNameDuplicate(name: String, id: Int?): WorkoutRelation?
 
     @Transaction
     @Delete
     suspend fun delete(exercise: Workout)
 
-    @Query("DELETE FROM workout_exercise WHERE id = :id")
-    suspend fun clearWorkoutExercises(id: Int)
+    @Query("DELETE FROM workout_exercise WHERE workout_id = :workoutId")
+    suspend fun clearWorkoutExercises(workoutId: Int)
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.ABORT)
@@ -48,5 +48,9 @@ interface WorkoutDao {
     @Transaction
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(workout: Workout)
+
+    @Transaction
+    @Query("SELECT image FROM workout WHERE id = :id")
+    suspend fun getWorkoutImage(id: Int): String?
 
 }

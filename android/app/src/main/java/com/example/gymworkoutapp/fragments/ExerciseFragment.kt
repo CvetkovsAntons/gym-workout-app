@@ -25,7 +25,7 @@ class ExerciseFragment(
     private val exerciseSelectedListener: OnExerciseSelectedListener? = null
 ) : Fragment() {
 
-    private lateinit var exerciseListAdapter: ExerciseListAdapter
+    private lateinit var adapter: ExerciseListAdapter
 
     private var exercises = mutableListOf<ExerciseData>()
 
@@ -41,9 +41,7 @@ class ExerciseFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        lifecycleScope.launch {
-            setExerciseList()
-        }
+        setExerciseList()
 
         val createButton = view.findViewById<FloatingActionButton>(R.id.exercises_create)
 
@@ -59,30 +57,29 @@ class ExerciseFragment(
 
     override fun onResume() {
         super.onResume()
-
-        lifecycleScope.launch {
-            setExerciseList()
-        }
+        setExerciseList()
     }
 
-    private suspend fun setExerciseList() {
-        exercises = repository.getAllExercises()
+    private fun setExerciseList() {
+        lifecycleScope.launch {
+            exercises = repository.getAllExercises()
 
-        val recycler = requireView().findViewById<RecyclerView>(R.id.exercises_list)
-        recycler.layoutManager = LinearLayoutManager(requireContext())
+            val recycler = requireView().findViewById<RecyclerView>(R.id.exercises_list)
+            recycler.layoutManager = LinearLayoutManager(requireContext())
 
-        if (::exerciseListAdapter.isInitialized) {
-            exerciseListAdapter.updateItems(exercises)
-        } else {
-            exerciseListAdapter = ExerciseListAdapter(
-                exercises,
-                requireContext(),
-                lifecycleScope,
-                repository,
-                isModal,
-                exerciseSelectedListener
-            )
-            recycler.adapter = exerciseListAdapter
+            if (::adapter.isInitialized) {
+                adapter.updateItems(exercises)
+            } else {
+                adapter = ExerciseListAdapter(
+                    exercises,
+                    requireContext(),
+                    lifecycleScope,
+                    repository,
+                    isModal,
+                    exerciseSelectedListener
+                )
+                recycler.adapter = adapter
+            }
         }
     }
 

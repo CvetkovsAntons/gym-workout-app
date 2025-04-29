@@ -1,15 +1,14 @@
 package com.example.gymworkoutapp.data.repository
 
+import android.util.Log
 import com.example.gymworkoutapp.data.database.dao.WorkoutDao
-import com.example.gymworkoutapp.data.database.entities.ExerciseEquipment
-import com.example.gymworkoutapp.data.database.entities.ExerciseMuscle
 import com.example.gymworkoutapp.data.mappers.toData
 import com.example.gymworkoutapp.data.mappers.toEntity
 import com.example.gymworkoutapp.models.WorkoutData
 
 class WorkoutRepository(private val dao: WorkoutDao) {
 
-    suspend fun getAll(): MutableList<WorkoutData> {
+    suspend fun getAllWorkouts(): MutableList<WorkoutData> {
         return dao.getAll()
             ?.map { it.toData() }
             ?.toMutableList()
@@ -25,7 +24,7 @@ class WorkoutRepository(private val dao: WorkoutDao) {
     }
 
     suspend fun duplicateExists(workout: WorkoutData): Boolean {
-        return dao.getByName(workout.name) != null
+        return dao.searchForNameDuplicate(workout.name, workout.id) != null
     }
 
     suspend fun upsertWorkout(workoutData: WorkoutData) {
@@ -45,9 +44,17 @@ class WorkoutRepository(private val dao: WorkoutDao) {
             var workoutExerciseId = dao.insert(exercise.toEntity(workoutId)).toInt()
 
             exercise.sets.forEach { set ->
+                Log.d("workout config set", set.toString())
                 dao.insert(set.toEntity(workoutExerciseId))
             }
         }
+    }
+
+    suspend fun getWorkoutImage(workout: WorkoutData): String? {
+        if (workout.id == 0) {
+            return null
+        }
+        return dao.getWorkoutImage(workout.id)
     }
 
 }

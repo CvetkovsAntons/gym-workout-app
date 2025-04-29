@@ -81,12 +81,12 @@ class ExerciseConfigActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             exercise?.let {
-                exerciseNameField.text = Editable.Factory.getInstance().newEditable(it.name)
-                findViewById<EditText>(R.id.exercise_config_description).text = Editable.Factory.getInstance().newEditable(it.description)
-                findViewById<EditText>(R.id.exercise_config_description).text = Editable.Factory.getInstance().newEditable(it.description)
-                videoUrlInput.text = Editable.Factory.getInstance().newEditable(it.videoUrl)
+                exerciseNameField.setText(it.name)
+                findViewById<EditText>(R.id.exercise_config_description).setText(it.description)
+                videoUrlInput.setText(it.videoUrl)
 
-                val image = repository.getExerciseImage(it)?.base64ToBitmap()
+                imageUri = repository.getExerciseImage(it)
+                val image = imageUri?.base64ToBitmap()
                 val imageView = findViewById<ImageView>(R.id.exercise_config_image)
                 val imageUriTextView = findViewById<TextView>(R.id.exercise_config_image_uri)
 

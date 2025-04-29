@@ -94,7 +94,7 @@ class ExerciseRepository(private val dao: ExerciseDao) {
     }
 
     suspend fun duplicateExists(exercise: ExerciseData): Boolean {
-        return dao.getByNameAndVideoUrl(exercise.name, exercise.id) != null
+        return dao.searchForNameDuplicate(exercise.name, exercise.id) != null
     }
 
     suspend fun deleteExercise(exercise: ExerciseData) {

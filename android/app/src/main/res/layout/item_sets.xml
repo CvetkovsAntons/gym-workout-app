@@ -55,7 +55,7 @@
             android:layout_marginEnd="10dp"
             android:background="@color/primary_lighter"
             android:imeOptions="actionDone"
-            android:inputType="number"
+            android:inputType="numberDecimal"
             android:padding="3dp"
             android:text=""
             android:textAlignment="center"

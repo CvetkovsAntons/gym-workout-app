@@ -2,6 +2,7 @@ package com.example.gymworkoutapp.activities
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -19,38 +20,80 @@ import com.example.gymworkoutapp.App
 import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.adapters.WorkoutExerciseAdapter
 import com.example.gymworkoutapp.data.mappers.toWorkoutExerciseData
+import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.data.repository.WorkoutRepository
 import com.example.gymworkoutapp.fragments.ExerciseDialogFragment
 import com.example.gymworkoutapp.listeners.OnExerciseSelectedListener
 import com.example.gymworkoutapp.models.ExerciseData
 import com.example.gymworkoutapp.models.WorkoutData
 import com.example.gymworkoutapp.models.WorkoutExerciseData
+import com.example.gymworkoutapp.utils.base64ToBitmap
 import com.example.gymworkoutapp.utils.toBase64
 import kotlinx.coroutines.launch
 
 class WorkoutConfigActivity : AppCompatActivity(), OnExerciseSelectedListener {
 
-    private lateinit var repository: WorkoutRepository
+    private lateinit var workoutRepository: WorkoutRepository
+    private lateinit var exerciseRepository: ExerciseRepository
+    private lateinit var exerciseAdapter: WorkoutExerciseAdapter
+    private lateinit var workoutNameField: EditText
 
     private var workout: WorkoutData? = null
-
-    private lateinit var exerciseAdapter: WorkoutExerciseAdapter
-
-    private lateinit var workoutNameField: EditText
     private var exercises = mutableListOf<WorkoutExerciseData>()
-
     private var imageUri: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        repository = (application as App).workoutRepository
+        workoutRepository = (application as App).workoutRepository
+        exerciseRepository = (application as App).exerciseRepository
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_workout_config)
 
+        workout = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("workout", WorkoutData::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra("workout")
+        }
+
         workoutNameField = findViewById<EditText>(R.id.workout_config_name)
         workoutNameField.requestFocus()
 
-        setExerciseList()
+        lifecycleScope.launch {
+            workout?.let {
+                workoutNameField.setText(it.name)
+                findViewById<EditText>(R.id.workout_config_description).setText(it.description)
+
+                imageUri = workoutRepository.getWorkoutImage(it)
+                val image = imageUri?.base64ToBitmap()
+                val imageView = findViewById<ImageView>(R.id.workout_config_image)
+                val imageUriTextView = findViewById<TextView>(R.id.workout_config_image_uri)
+
+                if (image != null) {
+                    try {
+                        imageView.setImageBitmap(image)
+                        imageView.visibility = View.VISIBLE
+                        imageUriTextView.text = "Loaded from saved image"
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        imageView.visibility = View.GONE
+                        imageUriTextView.text = "Failed to load image"
+                    }
+                } else {
+                    imageView.visibility = View.GONE
+                    imageUriTextView.text = "Image is not selected..."
+                }
+
+                it.exercises.map {
+                    it.exercise.image = exerciseRepository.getExerciseImage(it.exercise)
+                }
+
+                exercises = it.exercises
+            }
+
+            setExerciseList()
+        }
+
 
         findViewById<Button>(R.id.workout_config_btn_cancel).setOnClickListener {
             finish()
@@ -129,6 +172,7 @@ class WorkoutConfigActivity : AppCompatActivity(), OnExerciseSelectedListener {
         }
 
         val workout = WorkoutData(
+            id = workout?.id ?: 0,
             name = name.toString(),
             description = description.toString(),
             image = imageUri?.toString(),
@@ -137,12 +181,12 @@ class WorkoutConfigActivity : AppCompatActivity(), OnExerciseSelectedListener {
         )
 
         lifecycleScope.launch {
-            if (repository.duplicateExists(workout)) {
+            if (workoutRepository.duplicateExists(workout)) {
                 toast("Name is already taken")
                 return@launch
             }
 
-            repository.upsertWorkout(workout)
+            workoutRepository.upsertWorkout(workout)
             finish()
         }
     }

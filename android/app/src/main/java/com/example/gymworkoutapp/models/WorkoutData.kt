@@ -1,5 +1,9 @@
 package com.example.gymworkoutapp.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class WorkoutData(
     var id: Int = 0,
     var name: String,
@@ -7,4 +11,4 @@ data class WorkoutData(
     var image: String?,
     var isUserCreated: Boolean,
     var exercises: MutableList<WorkoutExerciseData>
-)
+) : Parcelable

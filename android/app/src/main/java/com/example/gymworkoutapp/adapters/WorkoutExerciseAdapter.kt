@@ -66,11 +66,9 @@ class WorkoutExerciseAdapter(
             setsAdapter.notifyItemInserted(item.sets.size - 1)
         }
 
-        if (items.size > 1) {
-            holder.deleteButton.setOnClickListener {
-                items.removeAt(holder.adapterPosition)
-                notifyItemRemoved(holder.adapterPosition)
-            }
+        holder.deleteButton.setOnClickListener {
+            items.removeAt(holder.adapterPosition)
+            notifyItemRemoved(holder.adapterPosition)
         }
     }
 

@@ -1,7 +1,6 @@
 package com.example.gymworkoutapp.data.mappers
 
 import com.example.gymworkoutapp.data.database.entities.Exercise
-import com.example.gymworkoutapp.data.database.entities.WorkoutExerciseSet
 import com.example.gymworkoutapp.data.database.relations.ExerciseRelation
 import com.example.gymworkoutapp.models.ExerciseData
 import com.example.gymworkoutapp.models.WorkoutExerciseData
