@@ -23,7 +23,7 @@ import com.example.gymworkoutapp.network.client.ApiClient
 import com.example.gymworkoutapp.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
-class ProfileFragment(private var userRepository: UserRepository) : Fragment() {
+class ProfileFragment(private var repository: UserRepository) : Fragment() {
 
     private lateinit var authButton: Button
     private lateinit var deleteAccountButton: Button
@@ -136,12 +136,12 @@ class ProfileFragment(private var userRepository: UserRepository) : Fragment() {
         val historyWeightRecycler = view.findViewById<RecyclerView>(R.id.history_recycler_view)
 
         historyWeightRecycler.layoutManager = LinearLayoutManager(requireContext())
-        historyWeightRecycler.adapter = HistoryWeightAdapter(userRepository.getWeightHistory())
+        historyWeightRecycler.adapter = HistoryWeightAdapter(repository.getWeightHistory())
     }
 
     private suspend fun setUserData() {
         val view = requireView()
-        val userData = userRepository.getUserData()
+        val userData = repository.getUserData()
 
         var name = "-"
         var height = "-"

@@ -98,7 +98,7 @@ interface ExerciseDao {
 
     @Transaction
     @Query("SELECT * FROM exercise WHERE id != :id AND name = :name")
-    suspend fun getByNameAndVideoUrl(name: String, id: Int?): ExerciseRelation?
+    suspend fun searchForNameDuplicate(name: String, id: Int?): ExerciseRelation?
 
     @Transaction
     @Query("SELECT image FROM exercise WHERE id = :id")

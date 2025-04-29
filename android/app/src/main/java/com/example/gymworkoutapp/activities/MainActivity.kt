@@ -14,6 +14,7 @@ import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.data.mappers.isValid
 import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.data.repository.UserRepository
+import com.example.gymworkoutapp.data.repository.WorkoutRepository
 import com.example.gymworkoutapp.fragments.ExerciseFragment
 import com.example.gymworkoutapp.fragments.WorkoutFragment
 import com.example.gymworkoutapp.fragments.ProfileFragment
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private var userData: UserData? = null
     private lateinit var userRepository: UserRepository
     private lateinit var exerciseRepository: ExerciseRepository
+    private lateinit var workoutRepository: WorkoutRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         userRepository = (application as App).userRepository
         exerciseRepository = (application as App).exerciseRepository
+        workoutRepository = (application as App).workoutRepository
 
         userDataLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -65,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                     "exercisePage" -> ExerciseFragment(exerciseRepository)
                     "resultsPage" -> ResultsFragment(userRepository)
                     "profilePage" -> ProfileFragment(userRepository)
-                    else -> WorkoutFragment(userRepository)
+                    else -> WorkoutFragment(workoutRepository)
                 }
                 switchFragment(startFragment)
             }
@@ -80,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                             switchFragment(ProfileFragment(userRepository))
                         }
                     }
-                    else -> switchFragment(WorkoutFragment(userRepository))
+                    else -> switchFragment(WorkoutFragment(workoutRepository))
                 }
                 true
             }

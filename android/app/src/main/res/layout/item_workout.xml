@@ -10,25 +10,27 @@
     android:paddingLeft="8dp">
 
     <FrameLayout
-        android:id="@+id/exercise_icon_container"
+        android:id="@+id/workout_icon_container"
         android:layout_width="64dp"
         android:layout_height="64dp"
 
         android:background="@drawable/circle_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp">
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/exercise_icon"
+            android:id="@+id/workout_icon"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:scaleType="centerCrop"
-            android:contentDescription="Exercise icon"
+            android:contentDescription="Workout icon"
             app:shapeAppearanceOverlay="@style/CircleImage" />
 
         <TextView
-            android:id="@+id/exercise_icon_missing"
+            android:id="@+id/workout_icon_missing"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -40,24 +42,24 @@
     </FrameLayout>
 
     <LinearLayout
-        android:id="@+id/exercise_info"
+        android:id="@+id/workout_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/exercise_icon_container"
+        app:layout_constraintStart_toEndOf="@id/workout_icon_container"
         app:layout_constraintEnd_toStartOf="@id/icon_container"
         android:layout_marginStart="8dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp">
 
         <TextView
-            android:id="@+id/exercise_name"
+            android:id="@+id/workout_name"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Exercise"
+            android:text="Workout"
             android:textColor="@color/secondary" />
 
         <LinearLayout
@@ -67,47 +69,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Muscles:"
+                android:text="Number of exercises:"
                 android:layout_marginEnd="5dp"
                 android:textColor="@color/secondary" />
             <TextView
-                android:id="@+id/exercise_muscles"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="..."
-                android:textColor="@color/secondary" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Equipment:"
-                android:layout_marginEnd="5dp"
-                android:textColor="@color/secondary" />
-            <TextView
-                android:id="@+id/exercise_equipment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="..."
-                android:textColor="@color/secondary" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Difficulty:"
-                android:layout_marginEnd="5dp"
-                android:textColor="@color/secondary" />
-            <TextView
-                android:id="@+id/exercise_difficulty"
+                android:id="@+id/workout_num_of_exercises"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="..."
@@ -126,16 +92,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageView
-            android:id="@+id/view_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_view"
-            android:layout_marginBottom="8dp"
-            android:contentDescription="View"
-            android:visibility="gone"
-            app:tint="@color/secondary"/>
 
         <ImageView
             android:id="@+id/update_icon"

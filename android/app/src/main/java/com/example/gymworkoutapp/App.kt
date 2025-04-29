@@ -5,6 +5,7 @@ import com.example.gymworkoutapp.auth.SessionManager
 import com.example.gymworkoutapp.data.database.AppDatabase
 import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.data.repository.UserRepository
+import com.example.gymworkoutapp.data.repository.WorkoutRepository
 import com.example.gymworkoutapp.utils.Helper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,10 @@ class App : Application() {
 
     val exerciseRepository: ExerciseRepository by lazy {
         ExerciseRepository(database.exerciseDao())
+    }
+
+    val workoutRepository: WorkoutRepository by lazy {
+        WorkoutRepository(database.workoutDao())
     }
 
 }
