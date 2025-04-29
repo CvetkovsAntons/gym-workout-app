@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.R
-import com.example.gymworkoutapp.activities.ExerciseConfigActivity
+import com.example.gymworkoutapp.activities.ExerciseActivity
 import com.example.gymworkoutapp.adapters.ExerciseListAdapter
 import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.listeners.OnExerciseSelectedListener
@@ -50,7 +50,7 @@ class ExerciseFragment(
             view.findViewById<TextView>(R.id.exercises_title).text = "Choose an exercise"
         } else {
             createButton.setOnClickListener {
-                startActivity(Intent(activity, ExerciseConfigActivity::class.java))
+                startActivity(Intent(activity, ExerciseActivity::class.java))
             }
         }
     }

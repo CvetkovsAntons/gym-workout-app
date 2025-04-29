@@ -10,9 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.R
-import com.example.gymworkoutapp.activities.ExerciseConfigActivity
+import com.example.gymworkoutapp.activities.ExerciseActivity
 import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.listeners.OnExerciseSelectedListener
 import com.example.gymworkoutapp.models.ExerciseData
@@ -38,6 +39,8 @@ class ExerciseListAdapter(
         val iconMissing: TextView = itemView.findViewById(R.id.exercise_icon_missing)
         val deleteButton: ImageView = itemView.findViewById(R.id.delete_icon)
         val updateButton: ImageView = itemView.findViewById(R.id.update_icon)
+        val viewButton: ImageView = itemView.findViewById(R.id.view_icon)
+        val exercise: ConstraintLayout = itemView.findViewById(R.id.exercise)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -62,6 +65,14 @@ class ExerciseListAdapter(
         holder.muscles.text = displayListWithLimit(item.muscles, { it.name })
         holder.equipment.text = displayListWithLimit(item.equipment, { it.name })
 
+        holder.viewButton.setOnClickListener {
+            item.openInViewMode()
+        }
+
+        holder.exercise.setOnClickListener {
+            item.openInViewMode()
+        }
+
         if (isModal) {
             holder.updateButton.visibility = View.GONE
             holder.deleteButton.visibility = View.GONE
@@ -71,7 +82,7 @@ class ExerciseListAdapter(
             }
         } else {
             holder.updateButton.setOnClickListener {
-                val intent = Intent(context, ExerciseConfigActivity::class.java)
+                val intent = Intent(context, ExerciseActivity::class.java)
                 intent.putExtra("exercise", item.copy(image = null))
                 context.startActivity(intent)
             }
@@ -87,6 +98,13 @@ class ExerciseListAdapter(
     }
 
     override fun getItemCount(): Int = items.size
+
+    private fun ExerciseData.openInViewMode() {
+        val intent = Intent(context, ExerciseActivity::class.java)
+        intent.putExtra("exercise", this.copy(image = null))
+        intent.putExtra("mode", ExerciseActivity.VIEW_MODE)
+        context.startActivity(intent)
+    }
 
     fun updateItems(newItems: List<ExerciseData>) {
         items = newItems.toMutableList()

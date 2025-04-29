@@ -2,14 +2,9 @@ package com.example.gymworkoutapp.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.text.Editable
-import android.util.Base64
 import android.view.View
 import android.webkit.WebView
 import android.widget.ArrayAdapter
@@ -38,9 +33,8 @@ import com.example.gymworkoutapp.models.ExerciseData
 import com.example.gymworkoutapp.utils.base64ToBitmap
 import com.example.gymworkoutapp.utils.toBase64
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 
-class ExerciseConfigActivity : AppCompatActivity() {
+class ExerciseActivity : AppCompatActivity() {
 
     private lateinit var repository: ExerciseRepository
 
@@ -63,11 +57,23 @@ class ExerciseConfigActivity : AppCompatActivity() {
 
     private lateinit var exerciseNameField: EditText
 
+    companion object {
+        const val EDIT_MODE = "edit_mode"
+        const val VIEW_MODE = "view_mode"
+    }
+
+    private var mode = EDIT_MODE
+
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = (application as App).exerciseRepository
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_exercise_config)
+        setContentView(R.layout.activity_exercise)
+
+        if (intent.getStringExtra("mode") == VIEW_MODE) {
+            mode = VIEW_MODE
+            setViewMode()
+        }
 
         exercise = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra("exercise", ExerciseData::class.java)
@@ -256,7 +262,7 @@ class ExerciseConfigActivity : AppCompatActivity() {
             addRecord()
         }
 
-        val adapter = TextListAdapter(items, getText, setText)
+        val adapter = TextListAdapter(items, getText, setText, mode == VIEW_MODE)
         setAdapterRef(adapter)
         recycler.adapter = adapter
     }
@@ -333,8 +339,24 @@ class ExerciseConfigActivity : AppCompatActivity() {
         }
     }
 
-    private fun toast(message: String, context: Context = this@ExerciseConfigActivity) {
+    private fun toast(message: String, context: Context = this@ExerciseActivity) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setViewMode() {
+        findViewById<EditText>(R.id.exercise_config_name).isEnabled = false
+        findViewById<EditText>(R.id.exercise_config_description).isEnabled = false
+        findViewById<EditText>(R.id.exercise_config_video_url).isEnabled = false
+        findViewById<Spinner>(R.id.exercise_config_difficulty).isEnabled = false
+        findViewById<RecyclerView>(R.id.exercise_config_muscles).isEnabled = false
+        findViewById<RecyclerView>(R.id.exercise_config_equipment).isEnabled = false
+        findViewById<RecyclerView>(R.id.exercise_config_execution_tips).isEnabled = false
+        findViewById<RecyclerView>(R.id.exercise_config_execution_steps).isEnabled = false
+        findViewById<Button>(R.id.exercise_config_execution_steps_add_btn).visibility = View.GONE
+        findViewById<Button>(R.id.exercise_config_execution_tips_add_btn).visibility = View.GONE
+        findViewById<Button>(R.id.exercise_config_video_url_set_btn).visibility = View.GONE
+        findViewById<Button>(R.id.exercise_config_image_select_btn).visibility = View.GONE
+        findViewById<Button>(R.id.exercise_config_btn_save).visibility = View.GONE
     }
 
 }

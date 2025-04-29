@@ -7,7 +7,8 @@
     android:layout_marginBottom="5dp"
     android:layout_marginStart="5dp"
     android:layout_marginEnd="5dp"
-    android:paddingLeft="8dp">
+    android:paddingLeft="8dp"
+    android:id="@+id/exercise">
 
     <FrameLayout
         android:id="@+id/exercise_icon_container"
@@ -134,7 +135,6 @@
             android:src="@drawable/ic_view"
             android:layout_marginBottom="8dp"
             android:contentDescription="View"
-            android:visibility="gone"
             app:tint="@color/secondary"/>
 
         <ImageView
