@@ -11,8 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.activities.WorkoutActivity
 import com.example.gymworkoutapp.activities.WorkoutConfigActivity
 import com.example.gymworkoutapp.data.repository.WorkoutRepository
 import com.example.gymworkoutapp.models.WorkoutData
@@ -34,6 +36,7 @@ class WorkoutListAdapter(
         val iconMissing: TextView = itemView.findViewById(R.id.workout_icon_missing)
         val deleteButton: ImageView = itemView.findViewById(R.id.delete_icon)
         val updateButton: ImageView = itemView.findViewById(R.id.update_icon)
+        val workout: ConstraintLayout = itemView.findViewById(R.id.workout)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -67,6 +70,11 @@ class WorkoutListAdapter(
                 .setPositiveButton("Yes") { _, _ -> deleteExercise(item, position) }
                 .setNegativeButton("Cancel", null)
                 .show()
+        }
+        holder.workout.setOnClickListener {
+            val intent = Intent(context, WorkoutActivity::class.java)
+            intent.putExtra("workout_id", item.id)
+            context.startActivity(intent)
         }
     }
 

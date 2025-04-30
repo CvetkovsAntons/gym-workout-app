@@ -154,8 +154,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/set_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/primary_lighter" />
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/add_set"

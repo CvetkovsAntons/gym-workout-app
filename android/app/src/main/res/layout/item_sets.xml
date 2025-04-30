@@ -3,8 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/rounded_container"
-    android:layout_marginBottom="8dp">
+    android:background="@drawable/rounded_container_lighter"
+    android:layout_marginBottom="8dp"
+    android:id="@+id/set_container">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,20 +19,21 @@
 
         <TextView
             android:id="@+id/workout_exercises_sets_set"
-            android:layout_width="60dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:text="SET"
             android:textColor="@color/secondary"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginEnd="15dp" />
 
         <EditText
             android:id="@+id/workout_exercises_sets_reps"
-            android:layout_width="40dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:background="@color/primary_lighter"
+            android:layout_marginEnd="5dp"
+            android:background="@color/primary"
             android:imeOptions="actionDone"
             android:inputType="number"
             android:padding="3dp"
@@ -44,16 +46,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="REPS"
-            android:layout_marginEnd="30dp"
+            android:layout_marginEnd="15dp"
             android:textColor="@color/secondary"
             android:textSize="18sp" />
 
         <EditText
             android:id="@+id/workout_exercises_sets_weight"
-            android:layout_width="40dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:background="@color/primary_lighter"
+            android:layout_marginEnd="5dp"
+            android:background="@color/primary"
             android:imeOptions="actionDone"
             android:inputType="numberDecimal"
             android:padding="3dp"
@@ -65,7 +67,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="30dp"
+            android:layout_marginEnd="16dp"
             android:text="KG"
             android:textColor="@color/secondary"
             android:textSize="18sp" />
@@ -77,6 +79,26 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_delete"
             app:tint="@color/danger" />
+
+        <ImageView
+            android:id="@+id/workout_unchecked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_unchecked"
+            android:visibility="gone"
+            android:layout_marginStart="15dp"
+            app:tint="@color/secondary" />
+
+        <ImageView
+            android:id="@+id/workout_checked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_checked"
+            android:visibility="gone"
+            android:layout_marginStart="15dp"
+            app:tint="@color/secondary" />
 
     </LinearLayout>
 

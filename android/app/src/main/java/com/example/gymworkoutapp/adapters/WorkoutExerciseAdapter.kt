@@ -1,16 +1,18 @@
 package com.example.gymworkoutapp.adapters
 
-import android.graphics.BitmapFactory
-import android.util.Base64
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.activities.ExerciseActivity
 import com.example.gymworkoutapp.models.ExerciseData
 import com.example.gymworkoutapp.models.WorkoutExerciseData
 import com.example.gymworkoutapp.models.WorkoutExerciseSetData
@@ -18,7 +20,9 @@ import com.example.gymworkoutapp.utils.base64ToBitmap
 import com.google.android.material.imageview.ShapeableImageView
 
 class WorkoutExerciseAdapter(
-    private var items: MutableList<WorkoutExerciseData>
+    private var items: MutableList<WorkoutExerciseData>,
+    private val context: Context,
+    private val onSetLogged: () -> Unit
 ) : RecyclerView.Adapter<WorkoutExerciseAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -31,6 +35,7 @@ class WorkoutExerciseAdapter(
         val deleteButton: ImageView = view.findViewById(R.id.delete_icon)
         val setList: RecyclerView = view.findViewById(R.id.set_list)
         val addButton: Button = view.findViewById(R.id.add_set)
+        val exerciseInfo: LinearLayout = view.findViewById(R.id.exercise_info)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -57,9 +62,16 @@ class WorkoutExerciseAdapter(
         holder.muscles.text = displayListWithLimit(exercise.muscles, { it.name })
         holder.equipment.text = displayListWithLimit(exercise.equipment, { it.name })
 
-        val setsAdapter = WorkoutExerciseSetsAdapter(item.sets)
+        val setsAdapter = WorkoutExerciseSetsAdapter(item.sets, context, onSetLogged)
         holder.setList.adapter = setsAdapter
         holder.setList.layoutManager = LinearLayoutManager(holder.itemView.context)
+
+        holder.exerciseInfo.setOnClickListener {
+            val intent = Intent(context, ExerciseActivity::class.java)
+            intent.putExtra("exercise", exercise.copy(image = null))
+            intent.putExtra("mode", ExerciseActivity.VIEW_MODE)
+            context.startActivity(intent)
+        }
 
         holder.addButton.setOnClickListener {
             item.sets.add(WorkoutExerciseSetData(item.sets.count(), 0, 0.toFloat()))

@@ -149,7 +149,7 @@ class WorkoutConfigActivity : AppCompatActivity(), OnExerciseSelectedListener {
         } else {
             val recycler = findViewById<RecyclerView>(R.id.workout_config_exercises)
             recycler.layoutManager = LinearLayoutManager(this)
-            exerciseAdapter = WorkoutExerciseAdapter(exercises)
+            exerciseAdapter = WorkoutExerciseAdapter(exercises, this) {}
             recycler.adapter = exerciseAdapter
         }
     }
