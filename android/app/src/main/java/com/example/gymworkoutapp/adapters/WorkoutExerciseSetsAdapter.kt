@@ -18,7 +18,9 @@ import com.example.gymworkoutapp.models.WorkoutExerciseSetData
 class WorkoutExerciseSetsAdapter(
     private var items: MutableList<WorkoutExerciseSetData>,
     private val context: Context,
-    private val onSetLogged: () -> Unit
+    private val onSetLogged: () -> Unit,
+    private val showTimer: (WorkoutExerciseSetData) -> Unit,
+    private val isViewMode: Boolean = false,
 ) : RecyclerView.Adapter<WorkoutExerciseSetsAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -72,17 +74,18 @@ class WorkoutExerciseSetsAdapter(
         reps.setText(set.reps.toString())
         weight.setText(set.weight.toString())
 
-        if (set.isLogged) {
-            container.setBackgroundResource(R.drawable.rounded_container_lighter_logged)
-            uncheckedIcon.visibility = View.GONE
-            checkedIcon.visibility = View.VISIBLE
-        } else {
-            container.setBackgroundResource(R.drawable.rounded_container_lighter)
-            uncheckedIcon.visibility = View.VISIBLE
-            checkedIcon.visibility = View.GONE
+        if (!isViewMode) {
+            if (set.isLogged) {
+                container.setBackgroundResource(R.drawable.rounded_container_lighter_logged)
+                uncheckedIcon.visibility = View.GONE
+                checkedIcon.visibility = View.VISIBLE
+            } else {
+                container.setBackgroundResource(R.drawable.rounded_container_lighter)
+                uncheckedIcon.visibility = View.VISIBLE
+                checkedIcon.visibility = View.GONE
+            }
+            checkedIconState(set)
         }
-
-        checkedIconState(set)
     }
 
     private fun ViewHolder.checkedIconState(set: WorkoutExerciseSetData) {
@@ -95,6 +98,7 @@ class WorkoutExerciseSetsAdapter(
                 set.isLogged = !set.isLogged
                 notifyItemChanged(adapterPosition)
                 onSetLogged()
+                showTimer(set)
             }
         }
     }

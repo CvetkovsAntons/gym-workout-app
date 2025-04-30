@@ -15,21 +15,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.App
 import com.example.gymworkoutapp.R
 import com.example.gymworkoutapp.adapters.WorkoutExerciseAdapter
+import com.example.gymworkoutapp.adapters.WorkoutExerciseSetsAdapter.ViewHolder
 import com.example.gymworkoutapp.data.mappers.toWorkoutExerciseData
 import com.example.gymworkoutapp.data.repository.ExerciseRepository
 import com.example.gymworkoutapp.data.repository.WorkoutRepository
 import com.example.gymworkoutapp.fragments.ExerciseDialogFragment
+import com.example.gymworkoutapp.fragments.RestTimerDialogFragment
 import com.example.gymworkoutapp.listeners.OnExerciseSelectedListener
 import com.example.gymworkoutapp.models.ExerciseData
 import com.example.gymworkoutapp.models.WorkoutData
 import com.example.gymworkoutapp.models.WorkoutExerciseData
+import com.example.gymworkoutapp.models.WorkoutExerciseSetData
 import kotlinx.coroutines.launch
+import java.sql.Timestamp
 
 class WorkoutActivity : AppCompatActivity(), OnExerciseSelectedListener {
 
     private lateinit var workoutRepository: WorkoutRepository
     private lateinit var exerciseRepository: ExerciseRepository
     private lateinit var exerciseAdapter: WorkoutExerciseAdapter
+
+    private val started = Timestamp(System.currentTimeMillis())
 
     private var workout: WorkoutData? = null
     private var exercises = mutableListOf<WorkoutExerciseData>()
@@ -72,9 +78,12 @@ class WorkoutActivity : AppCompatActivity(), OnExerciseSelectedListener {
         } else {
             val recycler = findViewById<RecyclerView>(R.id.workout_exercises)
             recycler.layoutManager = LinearLayoutManager(this)
-            exerciseAdapter = WorkoutExerciseAdapter(exercises, this) {
-                checkIfWorkoutIsComplete()
-            }
+            exerciseAdapter = WorkoutExerciseAdapter(
+                exercises,
+                this,
+                { checkIfWorkoutIsComplete() },
+                { showTimer(it) }
+            )
             recycler.adapter = exerciseAdapter
         }
     }
@@ -96,6 +105,13 @@ class WorkoutActivity : AppCompatActivity(), OnExerciseSelectedListener {
         }
 
         findViewById<LinearLayout>(R.id.workout_btn).visibility = if (allSetsLogged) View.VISIBLE else View.GONE
+    }
+
+    private fun showTimer(set: WorkoutExerciseSetData) {
+        if (set.isLogged) {
+            val dialog = RestTimerDialogFragment()
+            dialog.show(supportFragmentManager, "ExerciseDialog")
+        }
     }
 
 }

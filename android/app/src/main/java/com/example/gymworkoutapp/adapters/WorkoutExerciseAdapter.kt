@@ -22,7 +22,9 @@ import com.google.android.material.imageview.ShapeableImageView
 class WorkoutExerciseAdapter(
     private var items: MutableList<WorkoutExerciseData>,
     private val context: Context,
-    private val onSetLogged: () -> Unit
+    private val onSetLogged: () -> Unit,
+    private val showTimer: (WorkoutExerciseSetData) -> Unit,
+    private val isViewMode: Boolean = false,
 ) : RecyclerView.Adapter<WorkoutExerciseAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -62,7 +64,7 @@ class WorkoutExerciseAdapter(
         holder.muscles.text = displayListWithLimit(exercise.muscles, { it.name })
         holder.equipment.text = displayListWithLimit(exercise.equipment, { it.name })
 
-        val setsAdapter = WorkoutExerciseSetsAdapter(item.sets, context, onSetLogged)
+        val setsAdapter = WorkoutExerciseSetsAdapter(item.sets, context, onSetLogged, showTimer, isViewMode)
         holder.setList.adapter = setsAdapter
         holder.setList.layoutManager = LinearLayoutManager(holder.itemView.context)
 
