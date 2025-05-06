@@ -3,6 +3,7 @@ package com.example.gymworkoutapp.data.database.relations
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.example.gymworkoutapp.data.database.entities.HistoryWorkout
+import com.example.gymworkoutapp.data.database.entities.HistoryWorkoutExercise
 import com.example.gymworkoutapp.data.database.entities.Workout
 import com.example.gymworkoutapp.data.database.entities.WorkoutExercise
 
@@ -11,13 +12,13 @@ data class HistoryWorkoutRelation(
 
     @Relation(
         entity = Workout::class,
-        parentColumn = "id",
-        entityColumn = "workout_id"
+        parentColumn = "workout_id",
+        entityColumn = "id"
     )
     val workout: Workout,
 
     @Relation(
-        entity = WorkoutExercise::class,
+        entity = HistoryWorkoutExercise::class,
         parentColumn = "id",
         entityColumn = "history_workout_id"
     )

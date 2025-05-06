@@ -14,8 +14,8 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.R
-import com.example.gymworkoutapp.activities.WorkoutActivity
 import com.example.gymworkoutapp.activities.WorkoutConfigActivity
+import com.example.gymworkoutapp.activities.WorkoutPreviewActivity
 import com.example.gymworkoutapp.data.repository.WorkoutRepository
 import com.example.gymworkoutapp.models.WorkoutData
 import com.google.android.material.imageview.ShapeableImageView
@@ -72,7 +72,7 @@ class WorkoutListAdapter(
                 .show()
         }
         holder.workout.setOnClickListener {
-            val intent = Intent(context, WorkoutActivity::class.java)
+            val intent = Intent(context, WorkoutPreviewActivity::class.java)
             intent.putExtra("workout_id", item.id)
             context.startActivity(intent)
         }

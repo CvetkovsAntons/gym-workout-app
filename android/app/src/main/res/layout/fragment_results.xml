@@ -11,7 +11,7 @@
         android:id="@+id/linearLayout9"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/black"
+        android:background="@color/primary_darker"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:padding="15dp"
             android:text="Results"
-            android:textColor="@color/white" />
+            android:textColor="@color/secondary" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,14 +44,14 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="0"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/secondary" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="FINISHED"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/secondary" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -59,7 +59,7 @@
                     android:layout_marginBottom="15dp"
                     android:gravity="center_horizontal"
                     android:text="WORKOUTS"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/secondary" />
             </LinearLayout>
 
             <LinearLayout
@@ -75,14 +75,14 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="0"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/secondary" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="STARTED"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/secondary" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -90,7 +90,7 @@
                     android:layout_marginBottom="15dp"
                     android:gravity="center_horizontal"
                     android:text="WORKOUTS"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/secondary" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -104,21 +104,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/results_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="325dp"
-        android:layout_marginBottom="15dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:src="@drawable/ic_delete"
-        android:backgroundTint="#282828"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/secondary" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/results_recycler"
@@ -127,6 +114,7 @@
         android:paddingBottom="160dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout9" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout9"
+        android:paddingTop="5dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

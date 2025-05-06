@@ -11,10 +11,28 @@ import com.example.gymworkoutapp.data.database.relations.HistoryWorkoutExerciseR
 import com.example.gymworkoutapp.data.database.relations.HistoryWorkoutRelation
 import com.example.gymworkoutapp.data.database.relations.WorkoutExerciseRelation
 import com.example.gymworkoutapp.data.database.relations.WorkoutRelation
+import com.example.gymworkoutapp.enums.WorkoutStatus
 import com.example.gymworkoutapp.models.HistoryWorkoutData
 import com.example.gymworkoutapp.models.WorkoutData
 import com.example.gymworkoutapp.models.WorkoutExerciseData
 import com.example.gymworkoutapp.models.WorkoutExerciseSetData
+import java.sql.Timestamp
+
+fun WorkoutData.toHistory(
+    historyWorkoutId: Int? = null,
+    startedAt: Timestamp,
+    totalVolume: Float,
+    status: WorkoutStatus = WorkoutStatus.IN_PROGRESS,
+    finishedAt: Timestamp? = null
+) = HistoryWorkoutData(
+    id = historyWorkoutId ?: 0,
+    workout = toEntity(),
+    startedAt = startedAt,
+    finishedAt = finishedAt,
+    exercises = exercises,
+    totalVolume = totalVolume,
+    status = status
+)
 
 fun HistoryWorkoutRelation.toData() = HistoryWorkoutData(
     id = history.id,
@@ -27,7 +45,7 @@ fun HistoryWorkoutRelation.toData() = HistoryWorkoutData(
     ),
     startedAt = history.startedAt,
     finishedAt = history.finishedAt,
-    totalVolume = history.totalVolume,
+    totalVolume = history.totalVolume ?: 0f,
     status = history.status,
     exercises = exercises.map { it.toData() }.toMutableList()
 )
@@ -39,6 +57,14 @@ fun HistoryWorkoutData.toEntity() = HistoryWorkout(
     finishedAt = finishedAt,
     totalVolume = totalVolume,
     status = status
+)
+
+fun HistoryWorkoutData.toWorkoutData() = WorkoutData(
+    name = workout.name,
+    description = workout.description,
+    image = workout.image,
+    isUserCreated = workout.isUserCreated,
+    exercises = exercises
 )
 
 fun HistoryWorkoutExerciseRelation.toData() = WorkoutExerciseData(

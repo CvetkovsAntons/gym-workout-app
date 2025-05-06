@@ -2,12 +2,21 @@ package com.example.gymworkoutapp.data.database.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.example.gymworkoutapp.enums.WorkoutStatus
 import java.sql.Timestamp
 
 @Entity(
-    tableName = "history_workout"
+    tableName = "history_workout",
+    foreignKeys = [
+        ForeignKey(
+            entity = Workout::class,
+            parentColumns = ["id"],
+            childColumns = ["workout_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
 )
 data class HistoryWorkout(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,

@@ -33,7 +33,7 @@ import com.example.gymworkoutapp.data.database.entities.WorkoutExerciseSet
         WorkoutExercise::class, WorkoutExerciseSet::class, HistoryWorkout::class,
         HistoryWorkoutExercise::class, HistoryWorkoutExerciseSet::class
     ],
-    version = 17
+    version = 20
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {

@@ -9,7 +9,7 @@ data class HistoryWorkoutData(
     val workout: Workout,
     var startedAt: Timestamp = Timestamp(System.currentTimeMillis()),
     var finishedAt: Timestamp? = null,
-    var totalVolume: Float? = 0f,
+    var totalVolume: Float = 0f,
     var status: WorkoutStatus = WorkoutStatus.IN_PROGRESS,
     var exercises: MutableList<WorkoutExerciseData>
 )

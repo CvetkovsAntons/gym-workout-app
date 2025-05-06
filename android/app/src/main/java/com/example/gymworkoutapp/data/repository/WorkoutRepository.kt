@@ -1,9 +1,11 @@
 package com.example.gymworkoutapp.data.repository
 
-import android.util.Log
 import com.example.gymworkoutapp.data.database.dao.WorkoutDao
 import com.example.gymworkoutapp.data.mappers.toData
 import com.example.gymworkoutapp.data.mappers.toEntity
+import com.example.gymworkoutapp.data.mappers.toHistoryEntity
+import com.example.gymworkoutapp.enums.WorkoutStatus
+import com.example.gymworkoutapp.models.HistoryWorkoutData
 import com.example.gymworkoutapp.models.WorkoutData
 
 class WorkoutRepository(private val dao: WorkoutDao) {
@@ -34,7 +36,7 @@ class WorkoutRepository(private val dao: WorkoutDao) {
         if (workout.id == 0) {
             workoutId = dao.insert(workout).toInt()
         } else {
-            dao.clearWorkoutExercises(workout.id)
+            dao.clearWorkoutExercises(workoutId)
             dao.update(workout)
         }
 
@@ -44,7 +46,6 @@ class WorkoutRepository(private val dao: WorkoutDao) {
             var workoutExerciseId = dao.insert(exercise.toEntity(workoutId)).toInt()
 
             exercise.sets.forEach { set ->
-                Log.d("workout config set", set.toString())
                 dao.insert(set.toEntity(workoutExerciseId))
             }
         }
@@ -55,6 +56,50 @@ class WorkoutRepository(private val dao: WorkoutDao) {
             return null
         }
         return dao.getWorkoutImage(workout.id)
+    }
+
+    suspend fun getHistoryWorkout(id: Int): HistoryWorkoutData?  {
+        return dao.getHistoryWorkout(id)?.toData()
+    }
+
+    suspend fun getHistoryWorkout(workoutId: Int, status: WorkoutStatus): HistoryWorkoutData?  {
+        return dao.getHistoryWorkout(workoutId, status)?.toData()
+    }
+
+    suspend fun getHistory(): List<HistoryWorkoutData>?  {
+        return dao.getHistory()?.map { it.toData() }
+    }
+
+    suspend fun countOfFinishedWorkouts(): Int  {
+        return dao.countOfHistoryWorkoutsByStatus(WorkoutStatus.FINISHED)
+    }
+
+    suspend fun countOfStartedWorkouts(): Int  {
+        return dao.countOfHistoryWorkouts()
+    }
+
+    suspend fun upsertHistoryWorkout(historyWorkoutData: HistoryWorkoutData): HistoryWorkoutData? {
+        val workout = historyWorkoutData.toEntity()
+        var historyWorkoutId = workout.id
+
+        if (workout.id == 0) {
+            historyWorkoutId = dao.insert(workout).toInt()
+        } else {
+            dao.clearHistoryWorkoutExercises(historyWorkoutId)
+            dao.update(workout)
+        }
+
+        val exercises = historyWorkoutData.exercises
+
+        exercises.forEach { exercise ->
+            var workoutExerciseId = dao.insert(exercise.toHistoryEntity(historyWorkoutId)).toInt()
+
+            exercise.sets.forEach { set ->
+                dao.insert(set.toHistoryEntity(workoutExerciseId))
+            }
+        }
+
+        return dao.getHistoryWorkoutById(historyWorkoutId)?.toData()
     }
 
 }
