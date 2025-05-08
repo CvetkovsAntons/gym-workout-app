@@ -146,7 +146,7 @@
         app:layout_constraintBottom_toTopOf="@+id/workout_result_btn_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:paddingTop="5dp" />
+        android:padding="5dp" />
 
     <LinearLayout
         android:id="@+id/workout_result_btn_container"

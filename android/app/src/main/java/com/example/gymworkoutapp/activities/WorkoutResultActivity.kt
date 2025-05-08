@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.App
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.adapters.ReadonlyWorkoutExerciseAdapter
 import com.example.gymworkoutapp.adapters.WorkoutExerciseAdapter
 import com.example.gymworkoutapp.data.repository.WorkoutRepository
 import kotlinx.coroutines.launch
@@ -65,7 +66,7 @@ class WorkoutResultActivity : AppCompatActivity() {
                 val recycler = findViewById<RecyclerView>(R.id.workout_result_recycler)
                 recycler.visibility = View.VISIBLE
                 recycler.layoutManager = LinearLayoutManager(this@WorkoutResultActivity)
-                recycler.adapter = WorkoutExerciseAdapter(workout.exercises, this@WorkoutResultActivity, {}, {}, true)
+                recycler.adapter = ReadonlyWorkoutExerciseAdapter(workout.exercises, this@WorkoutResultActivity)
             }
         }
 
