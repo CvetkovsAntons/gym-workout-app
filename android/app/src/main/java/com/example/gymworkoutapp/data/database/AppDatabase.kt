@@ -16,6 +16,9 @@ import com.example.gymworkoutapp.data.database.entities.ExerciseExecutionStep
 import com.example.gymworkoutapp.data.database.entities.ExerciseExecutionTip
 import com.example.gymworkoutapp.data.database.entities.ExerciseMuscle
 import com.example.gymworkoutapp.data.database.entities.HistoryWeight
+import com.example.gymworkoutapp.data.database.entities.HistoryWorkout
+import com.example.gymworkoutapp.data.database.entities.HistoryWorkoutExercise
+import com.example.gymworkoutapp.data.database.entities.HistoryWorkoutExerciseSet
 import com.example.gymworkoutapp.data.database.entities.Muscle
 import com.example.gymworkoutapp.data.database.entities.User
 import com.example.gymworkoutapp.data.database.entities.Workout
@@ -27,9 +30,10 @@ import com.example.gymworkoutapp.data.database.entities.WorkoutExerciseSet
         User::class, HistoryWeight::class, Muscle::class, Equipment::class,
         Exercise::class, ExerciseMuscle::class, ExerciseEquipment::class,
         ExerciseExecutionTip::class, ExerciseExecutionStep::class, Workout::class,
-        WorkoutExercise::class, WorkoutExerciseSet::class
+        WorkoutExercise::class, WorkoutExerciseSet::class, HistoryWorkout::class,
+        HistoryWorkoutExercise::class, HistoryWorkoutExerciseSet::class
     ],
-    version = 15
+    version = 20
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {

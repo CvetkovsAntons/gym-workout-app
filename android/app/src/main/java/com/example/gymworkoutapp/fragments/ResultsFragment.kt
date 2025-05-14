@@ -4,22 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.gymworkoutapp.R
+import com.example.gymworkoutapp.adapters.HistoryWorkoutAdapter
 import com.example.gymworkoutapp.data.repository.UserRepository
+import com.example.gymworkoutapp.data.repository.WorkoutRepository
+import kotlinx.coroutines.launch
 
-class ResultsFragment(repository: UserRepository) : Fragment() {
+class ResultsFragment(private val repository: WorkoutRepository) : Fragment() {
 
-//    private lateinit var database : FirebaseDatabase
-//    private lateinit var auth : FirebaseAuth
-//    private lateinit var nameList : ArrayList<String>
-//    private lateinit var dateList : ArrayList<String>
-//    private lateinit var timeList : ArrayList<String>
-//    private lateinit var statusList: ArrayList<String>
-//    private lateinit var idList: ArrayList<String>
-//    private lateinit var recyclerView: RecyclerView
-//    private lateinit var builder : AlertDialog.Builder
-//
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,125 +24,31 @@ class ResultsFragment(repository: UserRepository) : Fragment() {
     ): View {
         return inflater.inflate(R.layout.fragment_results, container, false)
     }
-//
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        database = FirebaseDatabase.getInstance()
-//        auth = FirebaseAuth.getInstance()
-//
-//        results_text.visibility = View.GONE
-//        results_delete.visibility = View.GONE
-//
-//        builder = AlertDialog.Builder(this.requireContext())
-//
-//        nameList = arrayListOf<String>()
-//        dateList = arrayListOf<String>()
-//        timeList = arrayListOf<String>()
-//        statusList = arrayListOf<String>()
-//        idList = arrayListOf<String>()
-//
-//        recyclerView = (view.findViewById(R.id.results_recycler)) as RecyclerView
-//        recyclerView.setHasFixedSize(true)
-//        val layoutManager = LinearLayoutManager(context)
-//        layoutManager.reverseLayout = true
-//        layoutManager.stackFromEnd = true
-//        recyclerView.layoutManager = layoutManager
-//
-//        results_delete.setOnClickListener {
-//            alertDialog()
-//        }
-//
-//        getFinishedWorkouts()
-//        getHistoryList()
-//    }
-//
-//    private fun getFinishedWorkouts() {
-//        database.getReference("users")
-//            .child(auth.currentUser!!.uid)
-//            .get()
-//            .addOnSuccessListener {
-//                val finished = it.child("finished").value.toString()
-//                val started = it.child("started").value.toString()
-//
-//                results_finished.text = finished
-//                results_started.text = started
-//
-//                if (started.toInt() == 0) {
-//                    results_text.visibility = View.VISIBLE
-//                    results_recycler.visibility = View.GONE
-//                    results_delete.visibility = View.GONE
-//                } else {
-//                    results_recycler.visibility = View.VISIBLE
-//                    results_delete.visibility = View.VISIBLE
-//                }
-//            }
-//    }
-//
-//    private fun getHistoryList() {
-//        database.getReference("history")
-//            .child(auth.currentUser!!.uid)
-//            .addValueEventListener(object : ValueEventListener {
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    nameList.clear()
-//                    dateList.clear()
-//                    timeList.clear()
-//                    statusList.clear()
-//                    if (snapshot.exists()) {
-//                        for (snap in snapshot.children) {
-//
-//                            val name = snap.child("workout").value.toString()
-//
-//                            val d = snap.child("date").value.toString()
-//                            val dateFormat = SimpleDateFormat("dd/MM/yy")
-//                            val timeFormat = SimpleDateFormat("hh:mm")
-//                            val date = dateFormat.format(d.toLong())
-//                            val time = timeFormat.format(d.toLong())
-//
-//                            val id = snap.key.toString()
-//
-//                            val status = snap.child("status").value.toString()
-//
-//                            nameList.add(name)
-//                            dateList.add(date)
-//                            timeList.add(time)
-//                            statusList.add(status)
-//                            idList.add(id)
-//                        }
-//                        val adapter = ResultsAdapter(nameList, dateList, timeList, statusList)
-//                        recyclerView.adapter = adapter
-//                        adapter.setOnItemClickListener(object: ResultsAdapter.onItemClickListener{
-//                            override fun onItemClick(position: Int) {
-//                                val intent = Intent(activity, ResultsDetailsActivity::class.java)
-//                                intent.putExtra("workout", idList[position])
-//                                startActivity(intent)
-//                            }
-//                        })
-//                    }
-//                }
-//
-//                override fun onCancelled(error: DatabaseError) {}
-//            })
-//    }
-//
-//    private fun alertDialog() {
-//        builder.setTitle("Are You Sure?")
-//            .setMessage("Are you sure you want to delete your results history?")
-//            .setCancelable(true)
-//            .setPositiveButton("Yes",
-//                DialogInterface.OnClickListener {
-//                        dialog, id -> deleteHistory()
-//                })
-//            .setNegativeButton("No",
-//                DialogInterface.OnClickListener {
-//                        dialog, id -> dialog.cancel()
-//                })
-//            .show()
-//    }
-//
-//    private fun deleteHistory() {
-//        database.getReference("users").child(auth.currentUser!!.uid).child("finished").setValue(0)
-//        database.getReference("users").child(auth.currentUser!!.uid).child("started").setValue(0)
-//        database.getReference("history").child(auth.currentUser!!.uid).removeValue()
-//
-//        getFinishedWorkouts()
-//    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        lifecycleScope.launch {
+            val started = repository.countOfStartedWorkouts()
+            val finished = repository.countOfFinishedWorkouts()
+            view.findViewById<TextView>(R.id.results_started).text = started.toString()
+            view.findViewById<TextView>(R.id.results_finished).text = finished.toString()
+
+            val history = repository.getHistory()
+            val emptyListText = view.findViewById<TextView>(R.id.results_text)
+            val recycler = view.findViewById<RecyclerView>(R.id.results_recycler)
+
+            if (history != null) {
+                val context = requireContext()
+                emptyListText.visibility = View.GONE
+                recycler.visibility = View.VISIBLE
+                recycler.layoutManager = LinearLayoutManager(context)
+                recycler.adapter = HistoryWorkoutAdapter(history, context)
+            } else {
+                emptyListText.visibility = View.VISIBLE
+                recycler.visibility = View.GONE
+            }
+        }
+    }
+
 }

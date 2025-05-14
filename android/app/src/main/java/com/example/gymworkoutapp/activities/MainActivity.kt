@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             if (supportFragmentManager.findFragmentById(R.id.flFragment) == null) {
                 val startFragment = when (page) {
                     "exercisePage" -> ExerciseFragment(exerciseRepository)
-                    "resultsPage" -> ResultsFragment(userRepository)
+                    "resultsPage" -> ResultsFragment(workoutRepository)
                     "profilePage" -> ProfileFragment(userRepository)
                     else -> WorkoutFragment(workoutRepository)
                 }
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             bottomNavigationView.setOnItemSelectedListener {
                 when (it.itemId) {
                     R.id.Exercise -> switchFragment(ExerciseFragment(exerciseRepository))
-                    R.id.Results -> switchFragment(ResultsFragment(userRepository))
+                    R.id.Results -> switchFragment(ResultsFragment(workoutRepository))
                     R.id.Profile -> {
                         lifecycleScope.launch {
                             switchFragment(ProfileFragment(userRepository))

@@ -29,8 +29,11 @@
 
         <activity android:name=".activities.UserDataActivity" />
         <activity android:name=".activities.AuthActivity" />
-        <activity android:name=".activities.ExerciseConfigActivity" />
+        <activity android:name=".activities.ExerciseActivity" />
+        <activity android:name=".activities.WorkoutActivity" />
+        <activity android:name=".activities.WorkoutPreviewActivity" />
         <activity android:name=".activities.WorkoutConfigActivity" />
+        <activity android:name=".activities.WorkoutResultActivity" />
 
     </application>
 

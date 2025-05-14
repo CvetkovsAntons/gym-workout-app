@@ -12,7 +12,8 @@ import com.example.gymworkoutapp.R
 class TextListAdapter<T>(
     private val items: MutableList<T>,
     private val getText: (T) -> String,
-    private val setText: (T, String) -> Unit
+    private val setText: (T, String) -> Unit,
+    private val isViewMode: Boolean
 ) : RecyclerView.Adapter<TextListAdapter<T>.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -30,20 +31,28 @@ class TextListAdapter<T>(
 
         holder.editText.setText(getText(item))
 
-        holder.editText.doAfterTextChanged {
-            setText(item, it.toString())
-        }
+        if (isViewMode) {
+            holder.editText.isEnabled = false
+            holder.removeButton.visibility = View.GONE
+        } else {
+            holder.editText.isEnabled = true
+            holder.removeButton.visibility = if (position == 0) View.GONE else View.VISIBLE
 
-        holder.removeButton.visibility = if (position == 0) View.GONE else View.VISIBLE
+            holder.editText.doAfterTextChanged {
+                setText(item, it.toString())
+            }
 
-        holder.removeButton.setOnClickListener {
-            val pos = holder.adapterPosition
-            if (pos != RecyclerView.NO_POSITION) {
-                items.removeAt(pos)
-                notifyItemRemoved(pos)
-                notifyItemChanged(items.lastIndex)
+            holder.removeButton.setOnClickListener {
+                val pos = holder.adapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    items.removeAt(pos)
+                    notifyItemRemoved(pos)
+                    notifyItemChanged(items.lastIndex)
+                }
             }
         }
+
+
     }
 
     override fun getItemCount(): Int = items.size

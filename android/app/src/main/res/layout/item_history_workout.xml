@@ -8,39 +8,7 @@
     android:layout_marginStart="5dp"
     android:layout_marginEnd="5dp"
     android:paddingLeft="8dp"
-    android:id="@+id/workout">
-
-    <FrameLayout
-        android:id="@+id/workout_icon_container"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-
-        android:background="@drawable/circle_background"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp">
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/workout_icon"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:scaleType="centerCrop"
-            android:contentDescription="Workout icon"
-            app:shapeAppearanceOverlay="@style/CircleImage" />
-
-        <TextView
-            android:id="@+id/workout_icon_missing"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:text=""
-            android:textSize="20sp"
-            android:textColor="@color/secondary"
-            android:visibility="gone" />
-    </FrameLayout>
+    android:id="@+id/workout_result">
 
     <LinearLayout
         android:id="@+id/workout_info"
@@ -49,7 +17,7 @@
         android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/workout_icon_container"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/icon_container"
         android:layout_marginStart="8dp"
         android:paddingTop="8dp"
@@ -70,14 +38,68 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Number of exercises:"
+                android:text="Status:"
                 android:layout_marginEnd="5dp"
                 android:textColor="@color/secondary" />
             <TextView
-                android:id="@+id/workout_num_of_exercises"
+                android:id="@+id/workout_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="..."
+                android:textColor="@color/secondary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Started at:"
+                android:layout_marginEnd="5dp"
+                android:textColor="@color/secondary" />
+            <TextView
+                android:id="@+id/workout_started_at"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="..."
+                android:textColor="@color/secondary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Finished at:"
+                android:layout_marginEnd="5dp"
+                android:textColor="@color/secondary" />
+            <TextView
+                android:id="@+id/workout_finished_at"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:textColor="@color/secondary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total volume:"
+                android:layout_marginEnd="5dp"
+                android:textColor="@color/secondary" />
+            <TextView
+                android:id="@+id/workout_total_volume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
                 android:textColor="@color/secondary" />
         </LinearLayout>
     </LinearLayout>
@@ -95,21 +117,13 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-            android:id="@+id/update_icon"
+            android:id="@+id/view_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_edit"
+            android:src="@drawable/ic_view"
             android:layout_marginBottom="8dp"
-            android:contentDescription="Edit"
+            android:contentDescription="View"
             app:tint="@color/secondary"/>
-
-        <ImageView
-            android:id="@+id/delete_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_delete"
-            android:contentDescription="Delete"
-            app:tint="@color/danger"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
